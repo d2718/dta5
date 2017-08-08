@@ -1,0 +1,5 @@
+# dta5 .gitignore
+
+# built executables
+dta5
+dta5pwd

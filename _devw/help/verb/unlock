@@ -1,0 +1,5 @@
+> LOCK <lockable_item> WITH <thing>
+> UNLOCK <lockable_item> WITH <thing>
+
+If you are holding <thing> in your hand, will attempt to lock or unlock <lockable_item> with it. The vast majority of things do not have functioning locks.
+
