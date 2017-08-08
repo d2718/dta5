@@ -1,0 +1,4 @@
+> OPEN <thing>
+> OPEN <thing> IN|ON|BEHIND|UNDER <container>
+
+Opens the specified <thing> if it can be opened. Most things in the game can't be; some can be, but not by you.

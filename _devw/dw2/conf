@@ -1,0 +1,6 @@
+# dta5 config file
+
+queue_length=256
+port=10102
+page_life=300
+help_dir=/home/dan/dev/dta5/help

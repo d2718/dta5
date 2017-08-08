@@ -1,0 +1,21 @@
+This help topic provides help on the functions and syntax of the various verbs.
+
+The vast majority of verbs in the game requires one of the following syntaxes:
+
+> <verb>
+For example:
+> LOOK
+
+> <verb> <direct object>
+For example:
+> LOOK TREE
+
+> <verb> <preposition> <indirect object>
+For example:
+> LOOK ON WOODEN TABLE
+
+> <verb> <direct object> <preposition> <indirect object>
+For example:
+> LOOK SILVER CUP ON WOODEN TABLE
+
+Not all verbs use all of these syntaxes (INVENTORY, for example), and some verbs don't uses these syntaxes at all (like SAY).

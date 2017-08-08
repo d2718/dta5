@@ -1,0 +1,14 @@
+The action and syntax of the PUT verb is identical to that of the DROP verb.
+
+> PUT
+
+Drops an item you are holding in your hand onto the ground.
+
+> PUT <thing>
+
+Drops a specific <thing> you are holding in your hand onto the ground.
+
+> PUT <thing> IN|ON|BEHIND|UNDER <container>
+
+Puts a <thing> you are holding in your hand in a specific place (if it can be contained there).
+

@@ -1,0 +1,7 @@
+The GET verb is syntactically and functionally identical to the TAKE verb.
+
+> GET <thing>
+> GET <thing> IN|ON|BEHIND|UNDER <container>
+
+Picks up <thing> and holds it in one of your hands, if <thing> can be picked up, and you have a hand free.
+

@@ -1,0 +1,14 @@
+The syntax and function of the DROP verb is identical to that of the PUT verb.
+
+> DROP
+
+Drops an item you are holding in your hand onto the ground.
+
+> DROP <thing>
+
+Drops a specific <thing> you are holding in your hand onto the ground.
+
+> DROP <thing> IN|ON|BEHIND|UNDER <container>
+
+Puts a <thing> you are holding in your hand in a specific place (if it can be contained there).
+

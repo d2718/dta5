@@ -1,0 +1,4 @@
+> CLOSE <thing>
+> CLOSE <thing> IN|ON|BEHIND|UNDER <container>
+
+Closes the specified <thing>, if it can be closed. Most things you encounter can't be.

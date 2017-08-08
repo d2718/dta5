@@ -1,0 +1,14 @@
+
+> LOOK
+
+Provides a detailed view of the space around you, including a list of other items, characters, and creatures that are there with you.
+
+> LOOK IN|ON|BEHIND|UNDER <thing>
+
+Provides a list of the items contained in/on/behind/under <thing>.
+
+> LOOK <thing>
+> LOOK <thing> IN|ON|BEHIND|UNDER <container>
+
+Provides a detailed view of a specific <thing> including what it is holding and wearing.
+

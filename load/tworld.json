@@ -1,0 +1,19 @@
+{   "x": "room",
+    "r": [  "r1", "First Room",
+            "Go east from here to get to the second room.",
+            "", "", "r2" ] }
+
+{   "x": "room",
+    "r": [  "r2", "Second Room",
+            "Go west from here to get back to the first room.",
+            "", "", "", "", "", "", "r1" ] }
+
+{   "x": "item",
+    "i": [  "r1-t1", "an item", "", false, 1.0, 1.0 ] }
+
+{   "x": "item",
+    "i": [  "r1-t2", "a gigantic granite block", "",  false, "x", "x" ] }
+
+{   "x": "pop",
+    "p": [  "r1", "s",
+            "r1-t1", "r1-t2" ] }

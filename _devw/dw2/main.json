@@ -1,0 +1,52 @@
+[ "room", "r1", "East Shelter", "r1-t2", "", "", "", "r1-t3" ]
+[ "room", "r2", "Branbury Beach Green, East", "", "", "r5", "", "r2-t4", "", "r4" ]
+[ "room", "r3", "West Shelter", "r4", "", "", "", "r6" ]
+[ "room", "r4", "Branbury Beach Green, West", "", "", "r2", "", "r3" ]
+[ "room", "r5", "Branbury Beach, Picnic Area", "", "", "", "", "r7", "", "r2" ]
+[ "room", "r6", "Branbury State Park, South of Facility", "", "r6-t1", "r7", "", "", "", "", "r3" ]
+[ "room", "r7", "Branbury State Park, Playground", "r5", "", "", "", "", "", "r6" ]
+
+["itemc",   "r1-t1", "some wooden picnic tables", "", true, "x", "x", false, false,
+          { "o": [1000, 3000] } ]
+["dwy",     "r1-t2", "the northern flapping screen door", "", false, "x", "x", true ]
+["dwy",     "r1-t3", "the southern flapping screen door", "", false, "x", "x", true ]
+          
+["item",    "r2-t1", "a blue baseball cap", "", false, 0.2, 0.3 ]
+["itemc",   "r2-t2", "a green plastic bucket", "with cartoonish ducks on it", false, 0.2, 2.0, false, true,
+          { "i": [5, 2]} ]
+["item",    "r2-t3", "a tattered tan towel", "", false, 0.25, 1]
+["dwy",     "r2-t4", "a flapping screen door", "", false, "x", "x", true ]
+
+["itemc",   "r3-t1", "a black plastic garbage bag", "", false, 0.1, 1, false, true,
+          { "i": [30, 55] } ]
+["itemc",   "r3-t2", "a metal first-aid chest", "", false, "x", "x", true, false,
+          { "i": [1000, 1000] } ]
+["item",    "r3-t2-t1", "some clean white gauze", "", false, 0.05, 0.2 ]
+["item",    "r3-t2-t2", "a plastic tube", "of antiseptic", false, 0.1, 0.05 ]
+["item",    "r3-t2-t3", "an/a orange and white defibrilator", "", false, 20, 5 ]
+["item",    "r3-t3", "a small metal key", "", false, 0.01, 0.005 ]
+
+["itemc",   "r4-t1", "a battered metal lunch box", "", false, 0.5, 1.5, true, false,
+          { "i": [ 10, 1.5 ] } ]
+
+["itemc",   "r5-t1", "some weathered plank tables", "", true, "x", "x", false, false,
+          { "o": [12000, 50000] } ]
+
+["dwy",     "r6-t1", "a flapping screen door", "", false, "x", "x", true ]
+
+["item",    "r7-t1", "some playground equipment", "", false, "x", "x" ]
+
+["pop", "r1", "s", "r1-t1", "r1-t2", "r1-t3" ]
+["pop", "r2", "c", "r2-t1", "r2-t2", "r2-t3" ]
+["pop", "r2", "s", "r2-t4" ]
+["pop", "r3", "c", "r3-t1", "r3-t2", "r3-t3" ]
+["pop", "r4", "c", "r4-t1" ]
+["pop", "r3-t2", "i", "r3-t2-t1", "r3-t2-t2", "r3-t2-t3" ]
+["pop", "r5", "s", "r5-t1" ]
+["pop", "r6", "s", "r6-t1" ]
+["pop", "r7", "s", "r7-t1" ]
+
+["build", "key", "r3-t3", "r3-t2", true]
+
+["door", "r1-t2", "r2-t4", false]
+["door", "r1-t3", "r6-t1", false]
