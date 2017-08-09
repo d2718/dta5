@@ -1,0 +1,12 @@
+There are several "emotive" verbs which do not do anything mechanically, but are nonetheless a way for your character to express itself. They all have the same set of syntaxes:
+
+> <verb>
+> <verb> <direction>
+> <verb> <thing>
+> <verb> <thing> IN|ON|BEHIND|UNDER <other thing>
+
+A small bit of harmless experimentation should make the results clear.
+
+The emotive verbs thus far are
+
+BLINK CHUCKLE GAZE FROWN GLANCE GRIN LEAN NOD RAISE SHRUG SIGH SNEER SNICKER SQUINT WINK
