@@ -13,6 +13,11 @@ import( "strings";
 var parseVerbs []string = []string{
   "close", "drop", "exits", "get", "go", "help", "inventory", "look", "lock",
   "open", "put", "say", "swap", "take", "unlock",
+  
+  // directional emote verbs (pc/emote.go)
+  "blink", "chuckle", "gaze", "frown", "glance", "grin", "lean",
+  "nod", "raise", "shrug", "sigh", "sneer", "snicker", "squint",
+  "wink",
 }
 
 var parsePreps map[string]byte = map[string]byte {
@@ -48,6 +53,24 @@ var parseDispatch map[string]ParseFunc = map[string]ParseFunc {
   "swap":       ParseIntransitive,
   "take":       ParseLikeLook,
   "unlock":     ParseLikeLock,
+  
+  // directional emote verbs
+  
+  "blink":      ParseEmote,
+  "chuckle":    ParseEmote,
+  "frown":      ParseEmote,
+  "gaze":       ParseEmote,
+  "glance":     ParseEmote,
+  "grin":       ParseEmote,
+  "lean":       ParseEmote,
+  "nod":        ParseEmote,
+  "raise":      ParseEmote,
+  "shrug":      ParseEmote,
+  "sigh":       ParseEmote,
+  "sneer":      ParseEmote,
+  "snicker":    ParseEmote,
+  "squint":     ParseEmote,
+  "wink":       ParseEmote,
 }
 
 var doDispatch map[string]DoFunc = map[string]DoFunc {
@@ -64,7 +87,51 @@ var doDispatch map[string]DoFunc = map[string]DoFunc {
   "say":        DoSay,
   "swap":       DoSwap,
   "take":       DoGet,
-  "unlock":     DoLock,
+  "unlock":     DoLock, // this is correct
+  
+  // directional emote verbs
+
+  "blink":      DoEmote,
+  "chuckle":    DoEmote,
+  "frown":      DoEmote,
+  "gaze":       DoEmote,
+  "glance":     DoEmote,
+  "grin":       DoEmote,
+  "lean":       DoEmote,
+  "nod":        DoEmote,
+  "raise":      DoEmote,
+  "shrug":      DoEmote,
+  "sigh":       DoEmote,
+  "sneer":      DoEmote,
+  "snicker":    DoEmote,
+  "squint":     DoEmote,
+  "wink":       DoEmote,
+}
+
+var cardDirs map[string]room.NavDir = map[string]room.NavDir {
+  "n":  room.N,     "north": room.N,
+  "ne": room.NE,    "northeast": room.NE,
+  "e":  room.E,     "east": room.E,
+  "se": room.SE,    "southeast": room.SE,
+  "s":  room.S,     "south": room.S,
+  "sw": room.SW,    "southwest": room.SW,
+  "w":  room.W,     "west": room.W,
+  "nw": room.NW,    "northwest": room.NW,
+  "u":  room.UP,    "up": room.UP,
+  "d":  room.DOWN,  "down": room.DOWN,
+  "o":  room.OUT,   "out": room.OUT, }
+
+var cardDirNames map[room.NavDir]string = map[room.NavDir]string {
+  room.N: "north", room.NE: "northeast", room.E: "east",
+  room.SE: "southeast", room.S: "south", room.SW: "southwest",
+  room.W: "west", room.NW: "northwest", room.UP: "up", room.DOWN: "down",
+  room.OUT: "out", }
+
+var emoteDirs map[string]room.NavDir = map[string]room.NavDir {
+  "forward":  room.NavDir(-1),
+  "back":     room.NavDir(-2),
+  "left":     room.NavDir(-3),
+  "right":    room.NavDir(-4),
 }
 
 func thisStartsThat(this, that string) bool {
@@ -518,4 +585,20 @@ func ParseLikeLock(subj *PlayerChar, verb string, toks []string, text string) {
   if scripts.Check(subj, dobj, iobj, verb, prep, text) {
     doDispatch[verb](subj, verb, dobj, prep, iobj, text)
   }
+}
+
+func ParseEmote(subj *PlayerChar, verb string, toks []string, text string) {
+  if len(toks) == 1 {
+    dir := toks[0]
+    if dir_num, ok := cardDirs[dir]; ok {
+      DoEmoteDir(subj, verb, dir_num)
+      return
+    }
+    if dir_num, ok := emoteDirs[dir]; ok {
+      DoEmoteDir(subj, verb, dir_num)
+      return
+    }
+  }
+  
+  ParseLikeLook(subj, verb, toks, text)
 }
