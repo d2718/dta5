@@ -20,6 +20,7 @@ func DoGet(pp *PlayerChar, verb string,
       ref.NilGuard(pp), verb, ref.NilGuard(dobj), prep,
       ref.NilGuard(iobj), text)
   
+  bod := pp.Body()
   if (pp.RightHand != nil) && (pp.LeftHand != nil) {
     pp.QWrite("You don't have a free hand to pick anything up.")
     return
