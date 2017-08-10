@@ -27,6 +27,7 @@ type Name interface {
   SubjPronoun()     string
   ObjPronoun()      string
   PossPronoun()     string
+  ReflexPronoun()   string
   Match([]string)   bool
 }
 
@@ -218,9 +219,10 @@ func (n NormalName) Short(p NameParam) string {
   return strings.Join(chunks, " ")
 }
 
-func (n NormalName) SubjPronoun() string { return "it" }
-func (n NormalName) ObjPronoun()  string { return "it" }
-func (n NormalName) PossPronoun() string { return "its" }
+func (n NormalName) SubjPronoun()   string { return "it" }
+func (n NormalName) ObjPronoun()    string { return "it" }
+func (n NormalName) PossPronoun()   string { return "its" }
+func (n NormalName) ReflexPronoun() string { return "itself" }
 
 func thisStartsThat(this, that string) bool {
   var ilen, alen int = len(this), len(that)
@@ -389,6 +391,19 @@ func (n ProperName) PossPronoun() string {
     return "their"
   default:
     return "its"
+  }
+}
+
+func (n ProperName) ReflexPronoun() string {
+  switch n.Gender {
+  case HE:
+    return "himself"
+  case SHE:
+    return "herself"
+  case THEY:
+    return "themselves"
+  default:
+    return "itself"
   }
 }
 

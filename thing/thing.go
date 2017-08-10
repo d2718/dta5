@@ -194,6 +194,15 @@ func (tl ThingList) Find(toks []string, ord int) (Thing, int) {
   return nil, remain
 }
 
+func (tl ThingList) Contains(t Thing) bool {
+  for _, x := range tl.Things {
+    if t == x {
+      return true
+    }
+  }
+  return false
+}
+
 func (tl ThingList) WillFitMass(t Thing) bool {
   switch tl.MassLimit.VT {
   case VT_UNLTD:

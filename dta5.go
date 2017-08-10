@@ -13,7 +13,7 @@ import( "bufio"; "fmt"; "flag"; "net"; "os"; "path/filepath"; "strings";
         "time";
         "github.com/d2718/dconfig";
         "dta5/log";
-        "dta5/act"; "dta5/desc"; "dta5/door"; "dta5/load"; "dta5/msg";
+        "dta5/act"; "dta5/desc"; "dta5/door"; "dta5/load"; "dta5/mood";
         "dta5/pc"; "dta5/ref"; "dta5/room"; "dta5/scripts"; "dta5/thing";
         "dta5/save";
 )
@@ -98,15 +98,17 @@ func processCommand(cmd string) {
   
   switch verb {
   case "wall":
-    m := msg.New(rest)
-    pc.Wall(m)
+    pc.Wall(pc.PM{Type: "sys", Payload: rest})
     
   case "save":
     if rest == "" {
       log(dtalog.MSG, "processCommand(): you must specify an identifier to save.")
       return
     }
-    m := msg.New("You are being logged out so that the state of the game may be saved.")
+    m := pc.PM{
+      Type: "sys",
+      Payload: "You are being logged out so that the state of the game may be saved.",
+    }
     pc.Wall(m)
     for _, pp := range pc.PlayerChars {
       pp.Logout()
@@ -142,7 +144,10 @@ func processCommand(cmd string) {
       log(dtalog.MSG, "processCommand(): you must specify and identifier to load.")
       return
     }
-    m := msg.New("You are being logged out so that the state of the game may be loaded.")
+    m := pc.PM{
+      Type: "sys",
+      Payload: "You are being logged out so that the state of the game may be loaded.",
+    }
     pc.Wall(m)
     for _, pp := range pc.PlayerChars {
       pp.Logout()
@@ -150,13 +155,27 @@ func processCommand(cmd string) {
     load_path := filepath.Join(worldDir, "saves", rest + ".json")
     ref.Reset()
     door.Reset()
+    mood.Initialize()
     load.LoadFile(filepath.Join(worldDir, mainWorldFile), load.PERM)
     load.LoadFile(load_path, load.MUT)
     desc.Initialize(filepath.Join(worldDir, descPath))
+    act.Initialize(actionQueueLength)
+    first_unload := act.Action{
+      Time: time.Now().Add(unloadInterval),
+      Act: autoUnload,
+    }
+    act.Enqueue(&first_unload)
+    for _, mp := range mood.Messengers {
+      mp.Arm()
+    }
+    
     log(dtalog.DBG, "processCommand(): load complete")
     
   case "quit":
-    m := msg.New("The game is being shut down RIGHT NOW.")
+    m := pc.PM{
+      Type:"sys",
+      Payload: "The game is being shut down RIGHT NOW.",
+    }
     pc.Wall(m)
     for _, pp := range pc.PlayerChars {
       pp.Logout()
@@ -182,6 +201,7 @@ func main() {
   Configure(filepath.Join(worldDir, "conf"))
   pc.PlayerDir = filepath.Join(worldDir, "pc_dir")
   
+  mood.Initialize()
   load.LoadFile(filepath.Join(worldDir, mainWorldFile), load.INIT)
   desc.Initialize(filepath.Join(worldDir, descPath))
   act.Initialize(actionQueueLength)
@@ -190,6 +210,9 @@ func main() {
     Act: autoUnload,
   }
   act.Enqueue(&first_unload)
+  for _, mp := range mood.Messengers {
+    mp.Arm()
+  }
   
   go listenForConnections()
   go listenToStdin()

@@ -416,8 +416,8 @@ func (p PlayerChar) InHand(obj thing.Thing) bool {
 func (pp PlayerChar) SetDescPage(sp *string) { return }
 func (pp PlayerChar) Desc() string { return fmt.Sprintf("You see %s.", pp.Full(0)) }
 
-func Wall(m *msg.Message) {
+func Wall(pm PM) {
   for _, pp := range PlayerChars {
-    pp.Deliver(m)
+    pp.Send(pm)
   }
 }

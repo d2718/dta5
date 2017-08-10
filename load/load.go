@@ -25,6 +25,9 @@
 // to populate a Room or Container
 // ["pop", "ref", "side_string", "ref_list"... ]
 //
+// to add a MoodMessaging object
+// ["mood", min_secs, max_secs, [ room_refs... ], [ messages...] ]
+//
 // to bind a script to a thing
 // ["bind", "obj_ref", "verb", "script_tag" ]
 //
@@ -38,8 +41,8 @@
 package load
 
 import( "encoding/json"; "fmt"; "os"; "path/filepath";
-        "dta5/door"; "dta5/log"; "dta5/ref"; "dta5/room"; "dta5/scripts";
-        "dta5/thing";
+        "dta5/door"; "dta5/log"; "dta5/mood"; "dta5/ref"; "dta5/room";
+        "dta5/scripts"; "dta5/thing";
         "dta5/load/build";
 )
 
@@ -194,6 +197,27 @@ func populate(data []interface{}) error {
   return nil
 }
 
+// loadMoodMessenger()
+// [ min_secs, max_secs, [ room_refs... ], messages... ] 
+//
+func loadMoodMessenger(data []interface{}) error {
+  min := data[0].(float64)
+  max := data[1].(float64)
+  raw_refs := data[2].([]interface{})
+  refs := make([]string, 0, len(raw_refs))
+  for _, r := range raw_refs {
+    refs = append(refs, r.(string))
+  }
+  raw_msgs := data[3:]
+  msgs := make([]string, 0, len(raw_msgs))
+  for _, m := range raw_msgs {
+    msgs = append(msgs, m.(string))
+  }
+  
+  mood.NewMessenger(min, max, refs, msgs)
+  return nil
+}
+
 // bindScript()
 // [ "obj_ref", "verb", "script_tag" ]
 //
@@ -223,6 +247,7 @@ var initialLoadMap = map[string]LoadFunc {
   "dwy":    loadDoorway,
   "door":   loadDoor,
   "pop":    populate,
+  "mood":   loadMoodMessenger,
   "script": bindScript,
   "build":  build.Build,
   "data":   loadData,
@@ -231,6 +256,7 @@ var initialLoadMap = map[string]LoadFunc {
 var permanentLoadMap = map[string]LoadFunc {
   "room":   loadRoom,
   "dwy":    loadDoorway,
+  "mood":   loadMoodMessenger,
   "script": bindScript,
 }
 var mutableLoadMap = map[string]LoadFunc {
