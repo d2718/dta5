@@ -16,8 +16,8 @@ var parseVerbs []string = []string{
   
   // directional emote verbs (pc/emote.go)
   "blink", "chuckle", "gaze", "frown", "glance", "grin", "lean",
-  "nod", "raise", "shrug", "sigh", "sneer", "snicker", "squint",
-  "wink",
+  "nod", "raise", "shrug", "sigh", "snap", "sneer", "snicker", "squint",
+  "stare", "wink",
 }
 
 var parsePreps map[string]byte = map[string]byte {
@@ -67,9 +67,11 @@ var parseDispatch map[string]ParseFunc = map[string]ParseFunc {
   "raise":      ParseEmote,
   "shrug":      ParseEmote,
   "sigh":       ParseEmote,
+  "snap":       ParseEmote,
   "sneer":      ParseEmote,
   "snicker":    ParseEmote,
   "squint":     ParseEmote,
+  "stare":      ParseEmote,
   "wink":       ParseEmote,
 }
 
@@ -102,9 +104,11 @@ var doDispatch map[string]DoFunc = map[string]DoFunc {
   "raise":      DoEmote,
   "shrug":      DoEmote,
   "sigh":       DoEmote,
+  "snap":       DoEmote,
   "sneer":      DoEmote,
   "snicker":    DoEmote,
   "squint":     DoEmote,
+  "stare":      DoEmote,
   "wink":       DoEmote,
 }
 

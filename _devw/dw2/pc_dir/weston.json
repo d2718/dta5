@@ -1,1 +1,2 @@
-{"RefToken":"pc1","PassHash":"$2a$04$YNUCazpTxUEAYc7JUwD5GeyAm7jc2zIsPdDRVOOuuneCD6E9I7Ou2","NameTitle":"","NameFirst":"Weston","NameRest":"","RightHand":"","LeftHand":"","Gender":2,"Location":"r5","Inventory":[]}
+{"RefToken":"pc1","PassHash":"$2a$04$YNUCazpTxUEAYc7JUwD5GeyAm7jc2zIsPdDRVOOuuneCD6E9I7Ou2","NameTitle":"","NameFirst":"Weston","NameRest":"","RightHand":"r3-t3","LeftHand":"","Gender":2,"Location":"r3","Inventory":["r3-t3"]}
+["item","r3-t3","a small metal key","",false,0.01,0.005]
