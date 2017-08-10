@@ -2,7 +2,7 @@
 //
 // the dta5 player character command parser
 //
-// updated 2017-08-06
+// updated 2017-08-10
 //
 package pc
 
@@ -33,6 +33,7 @@ var ordinals map[string]int = map[string]int {
   "first": 0, "second": 1, "third": 2, "fourth": 3, "fifth": 4, "sixth": 5,
   "seventh": 6, "eighth": 7, "ninth": 8, "tenth": 9, "eleventh": 10,
   "twelfth": 11,
+  "other": 1,
 }
 
 type ParseFunc func(*PlayerChar, string, []string, string)

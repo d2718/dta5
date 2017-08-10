@@ -7,12 +7,13 @@
 // inventory
 // swap
 //
-// updated 2017-08-05
+// updated 2017-08-10
 //
 package pc
 
-import(
-        "dta5/msg"; "dta5/name"; "dta5/room"; "dta5/thing"; "dta5/util";
+import( "fmt";
+        "dta5/door"; "dta5/msg"; "dta5/name"; "dta5/room"; "dta5/thing";
+        "dta5/util";
 )
 
 //type DoFunc func(*PlayerChar, string, thing.Thing, string, thing.Thing, string)
@@ -21,8 +22,13 @@ func DoExits(pp *PlayerChar, verb string, dobj thing.Thing,
               prep string, iobj thing.Thing, text string) {
   loc := pp.where.Place.(*room.Room)
   exit_dirs := make([]string, 0, 0)
-  for _, dir := range loc.ExitDirs() {
-    exit_dirs = append(exit_dirs, room.NavDirNames[dir])
+  for n, name := range room.NavDirNames {
+    switch e := loc.Nav(n).(type) {
+    case *room.Room:
+      exit_dirs = append(exit_dirs, name)
+    case *door.Doorway:
+      exit_dirs = append(exit_dirs, fmt.Sprintf("%s (%s)", name, e.Normal(0)))
+    }
   }
   
   switch len(exit_dirs) {
