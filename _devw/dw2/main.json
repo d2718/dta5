@@ -50,3 +50,5 @@
 
 ["door", "r1-t2", "r2-t4", false]
 ["door", "r1-t3", "r6-t1", false]
+
+["load", "world/moods.json"]
