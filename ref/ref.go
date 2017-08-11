@@ -5,7 +5,7 @@
 // A Referent is anything that can be universally identified by a string
 // reference.
 //
-// updated 2017-08-02
+// updated 2017-08-11
 //
 package ref
 
@@ -38,9 +38,19 @@ func Register(r Interface) error {
   log(dtalog.DBG, "Register(%q) called", r.Ref())
   locker.Lock()
   defer locker.Unlock()
-  _, exists := referents[r.Ref()]
-  if exists {
+  if _, exists := referents[r.Ref()]; exists {
     log(dtalog.WRN, "ref.Register(%q): reference already registered; replacing", r.Ref())
+  }
+  referents[r.Ref()] = r
+  return nil
+}
+
+func Reregister(r Interface) error {
+  log(dtalog.DBG, "Reregister(%q) called", r.Ref())
+  locker.Lock()
+  defer locker.Unlock()
+  if _, exists := referents[r.Ref()]; !exists {
+    log(dtalog.WRN, "ref.Reregister(%q): attempting to reregister nonexistent reference; registering", r.Ref())
   }
   referents[r.Ref()] = r
   return nil

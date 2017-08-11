@@ -8,7 +8,7 @@ package pc
 
 import( "encoding/json"; "fmt"; "net"; "os"; "path/filepath"; "sync"; "time";
         "golang.org/x/crypto/bcrypt";
-        "dta5/act";
+        "dta5/act"; "dta5/body";
         "dta5/name"; "dta5/load"; "dta5/log"; "dta5/msg"; "dta5/ref";
         "dta5/room"; "dta5/save"; "dta5/thing";
 )
@@ -48,8 +48,7 @@ type PlayerChar struct {
   name.ProperName
   where     thing.LocVec
   Inventory *thing.ThingList
-  LeftHand  thing.Thing
-  RightHand thing.Thing
+  bod       *body.BasicBody
   conn      net.Conn
   rcvr      *json.Decoder
   sndr      *json.Encoder
@@ -60,6 +59,7 @@ func (p PlayerChar) Ref() string { return p.ref }
 func (p PlayerChar) Mass() thing.TVal { return thing.INFTY }
 func (p PlayerChar) Bulk() thing.TVal { return thing.INFTY }
 func (p PlayerChar) Loc() thing.LocVec { return p.where }
+func (p PlayerChar) Body() body.Interface { return p.bod }
 
 func (pp *PlayerChar) SetLoc(loc thing.LocVec) {
   pp.where = loc
@@ -212,6 +212,7 @@ func Login(newConn net.Conn) error {
                                  Rest: ps.NameRest, Gender: ps.Gender },
     Inventory: thing.NewThingList(thing.VT_UNLTD, thing.VT_UNLTD, nil, 0),
     passHash: ps.PassHash,
+    bod:  body.NewHumaniod(),
     conn: newConn,
     rcvr: new_rcvr,
     sndr: new_sndr,
@@ -235,10 +236,10 @@ func Login(newConn net.Conn) error {
   }
   
   if ps.RightHand != "" {
-    new_pc.RightHand = ref.Deref(ps.RightHand).(thing.Thing)
+    new_pc.Body().SetHeld("right_hand", ref.Deref(ps.RightHand).(thing.Thing))
   }
   if ps.LeftHand != "" {
-    new_pc.LeftHand = ref.Deref(ps.LeftHand).(thing.Thing)
+    new_pc.Body().SetHeld("left_hand", ref.Deref(ps.LeftHand).(thing.Thing))
   }
   
   log(dtalog.DBG, "Login(): registered and loaded inventory")
@@ -281,11 +282,13 @@ func (pp *PlayerChar) Logout() error {
     Inventory: make([]string, 0, len(pp.Inventory.Things)),
   }
   
-  if pp.RightHand != nil {
-    state.RightHand = pp.RightHand.Ref()
+  bod := pp.Body()
+  
+  if rh, _ := bod.HeldIn("right_hand"); rh != nil {
+    state.RightHand = rh.Ref()
   }
-  if pp.LeftHand != nil {
-    state.LeftHand = pp.LeftHand.Ref()
+  if lh, _ := bod.HeldIn("left_hand"); lh != nil {
+    state.LeftHand = lh.Ref()
   }
   
   s, err := save.New(filepath.Join(PlayerDir, pp.uname + ".json"))
@@ -404,9 +407,10 @@ func (pp *PlayerChar) AllButMe() *thing.ThingList {
 }
 
 func (p PlayerChar) InHand(obj thing.Thing) bool {
-  if p.LeftHand == obj {
+  b := p.Body()
+  if t, _ := b.HeldIn("right_hand"); t == obj {
     return true
-  } else if p.RightHand == obj {
+  } else if t, _ := b.HeldIn("left_hand"); t == obj {
     return true
   } else {
     return false

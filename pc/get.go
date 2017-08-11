@@ -20,7 +20,10 @@ func DoGet(pp *PlayerChar, verb string,
       ref.NilGuard(pp), verb, ref.NilGuard(dobj), prep,
       ref.NilGuard(iobj), text)
   
-  if (pp.RightHand != nil) && (pp.LeftHand != nil) {
+  bod := pp.Body()
+  rh, _ := bod.HeldIn("right_hand")
+  lh, _ := bod.HeldIn("left_hand")
+  if (rh != nil) && (lh != nil) {
     pp.QWrite("You don't have a free hand to pick anything up.")
     return
   }
@@ -64,10 +67,10 @@ func DoGet(pp *PlayerChar, verb string,
     pp.where.Place.(*room.Room).Deliver(mesg)
   }
   
-  if pp.RightHand == nil {
-    pp.RightHand = dobj
+  if rh, _ := bod.HeldIn("right_hand"); rh == nil {
+    bod.SetHeld("right_hand", dobj)
   } else {
-    pp.LeftHand = dobj
+    bod.SetHeld("left_hand", dobj)
   }
   
   pp.Inventory.Add(dobj)
@@ -78,18 +81,21 @@ func DoPut(pp *PlayerChar, verb string,
            dobj thing.Thing, prep string, iobj thing.Thing,
            text string) {
   
+  bod := pp.Body()
   if dobj == nil {
-    if pp.RightHand != nil {
-      dobj = pp.RightHand
-    } else if pp.LeftHand != nil {
-      dobj = pp.LeftHand
+    if rh, _ := bod.HeldIn("right_hand"); rh != nil {
+      dobj = rh
+    } else if lh, _ := bod.HeldIn("left_hand"); lh != nil {
+      dobj = lh
     } else {
       pp.QWrite("You are not holding anything!")
       return
     }
   }
   
-  if (dobj != pp.RightHand) && (dobj != pp.LeftHand) {
+  rh, _ := bod.HeldIn("right_hand")
+  lh, _ := bod.HeldIn("left_hand")
+  if (dobj != rh) && (dobj != lh) {
     pp.QWrite("You are not holding %s.", dobj.Normal(0))
     return
   }
@@ -114,10 +120,10 @@ func DoPut(pp *PlayerChar, verb string,
         return
       }
       
-      if dobj == pp.RightHand {
-        pp.RightHand = nil
+      if rh, _ := bod.HeldIn("right_hand"); dobj == rh {
+        bod.SetHeld("right_hand", nil)
       } else {
-        pp.LeftHand = nil
+        bod.SetHeld("left_hand", nil)
       }
       pp.Inventory.Remove(dobj)
       sid.Add(dobj)
@@ -134,10 +140,10 @@ func DoPut(pp *PlayerChar, verb string,
   } else {
     rm := pp.where.Place.(*room.Room)
   
-    if dobj == pp.RightHand {
-      pp.RightHand = nil
+    if rh, _ := bod.HeldIn("right_hand"); rh == dobj {
+      bod.SetHeld("right_hand", nil)
     } else {
-      pp.LeftHand = nil
+      bod.SetHeld("left_hand", nil)
     }
     pp.Inventory.Remove(dobj)
     rm.Contents.Add(dobj)

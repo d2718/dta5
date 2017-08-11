@@ -11,7 +11,8 @@
 //
 package pc
 
-import( "fmt";
+import( "fmt"; "strings";
+        "github.com/delicb/gstring";
         "dta5/door"; "dta5/msg"; "dta5/name"; "dta5/room"; "dta5/thing";
         "dta5/util";
 )
@@ -43,57 +44,78 @@ func DoExits(pp *PlayerChar, verb string, dobj thing.Thing,
 
 func DoInventory(pp *PlayerChar, verb string, dobj thing.Thing,
                  prep string, iobj thing.Thing, text string) {
-                   
-  if pp.RightHand == nil {
-    if pp.LeftHand == nil {
-      pp.QWrite("You have nothing.")
+  
+  bod := pp.Body()
+  rh, _ := bod.HeldIn("right_hand")
+  lh, _ := bod.HeldIn("left_hand")
+  if rh == nil {
+    if lh == nil {
+      pp.QWrite("Your hands are empty.")
     } else {
-      pp.QWrite("You are holding %s in your left hand.",
-                pp.LeftHand.Full(0))
+      pp.QWrite("You are holding %s in your left hand.", lh.Full(0))
     }
   } else {
-    if pp.LeftHand == nil {
-      pp.QWrite("You are holding %s in your right hand.",
-                pp.RightHand.Full(0))
+    if lh == nil {
+      pp.QWrite("You are holding %s in your right hand.", rh.Full(0))
     } else {
       pp.QWrite("You are holding %s in your right hand and %s in your left hand.",
-                pp.RightHand.Full(0), pp.LeftHand.Full(0))
+                rh.Full(0), lh.Full(0))
     }
   }
+  
+  worn_stuff := make([]string, 0, 0)
+  for _, t := range pp.Inventory.Things {
+    if wt, ok := t.(thing.Wearable); ok {
+      if !bod.IsHolding(t) {
+        str := fmt.Sprintf(".   %s %s", t.Normal(0), bod.WornSlotName(wt.Slot()))
+        worn_stuff = append(worn_stuff, str)
+      }
+    }
+  }
+  if len(worn_stuff) > 0 {
+    f1p := map[string]interface{} { "pp": "your" }
+    txt := fmt.Sprintf("You are wearing:\n%s", strings.Join(worn_stuff, "\n"))
+    pp.QWrite(gstring.Sprintm(txt, f1p))
+  } else {
+    pp.QWrite("You aren't wearing anything worth mentioning.")
+  }
+  
 }
 
 func DoSwap(pp *PlayerChar, verb string, dobj thing.Thing, prep string,
             iobj thing.Thing, text string) {
-              
+  
+  bod := pp.Body()
+  rh, _ := bod.HeldIn("right_hand")
+  lh, _ := bod.HeldIn("left_hand")
   var m *msg.Message = nil
-  if pp.RightHand == nil {
-    if pp.LeftHand == nil {
+  if rh == nil {
+    if lh == nil {
       pp.QWrite("You have nothing to swap.")
       return
     } else {
       m = msg.New("%s passes %s from %s left to %s right hand.",
-                  util.Cap(pp.Normal(0)), pp.LeftHand.Normal(0),
+                  util.Cap(pp.Normal(0)), lh.Normal(0),
                   pp.PossPronoun(), pp.PossPronoun())
-      m.Add(pp, "You pass %s from your left to your right hand.",
-                pp.LeftHand.Normal(0))
+      m.Add(pp, "You pass %s from your left to your right hand.", lh.Normal(0))
     }
   } else {
-    if pp.LeftHand == nil {
+    if lh == nil {
       m = msg.New("%s passes %s from %s right to %s left hand.",
-                  util.Cap(pp.Normal(0)), pp.RightHand.Normal(0),
+                  util.Cap(pp.Normal(0)), rh.Normal(0),
                   pp.PossPronoun(), pp.PossPronoun())
-      m.Add(pp, "You pass %s from your right to your left hand.",
-                pp.RightHand.Normal(0))
+      m.Add(pp, "You pass %s from your right to your left hand.", rh.Normal(0))
     } else {
       m = msg.New("%s swaps %s in %s left hand with %s in %s right hand.",
-                  util.Cap(pp.Normal(0)), pp.LeftHand.Normal(name.DEF_ART),
-                  pp.PossPronoun(), pp.RightHand.Normal(name.DEF_ART),
+                  util.Cap(pp.Normal(0)), lh.Normal(name.DEF_ART),
+                  pp.PossPronoun(), rh.Normal(name.DEF_ART),
                   pp.PossPronoun())
       m.Add(pp, "You swap %s in your left hand with %s in your right hand.",
-                pp.LeftHand.Normal(name.DEF_ART), pp.RightHand.Normal(name.DEF_ART))
+                lh.Normal(name.DEF_ART), rh.Normal(name.DEF_ART))
     }
   }
   
   pp.where.Place.(*room.Room).Deliver(m)
-  pp.LeftHand, pp.RightHand = pp.RightHand, pp.LeftHand
+  bod.SetHeld("left_hand", rh)
+  bod.SetHeld("right_hand", lh)
 }

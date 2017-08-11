@@ -2,7 +2,7 @@
 //
 // dta5 loading and world-building module
 //
-// 2017-08-08
+// 2017-08-11
 
 // In data file, formats are
 //
@@ -17,6 +17,9 @@
 // thing.ItemContainer:
 // ["itemc", "ref", "artAdjNoun", "prepPhrase", plural, mass, bulk, toggleable, open,
 //           { "i": [in_mass, in_bulk], "o": [on_mass, on_bulk] ... } ]
+//
+// thing.Clothing:
+// ["cloth", "ref", "artAdjNoun", "prepPhrase", plural, mass, bulk, "slot" ]
 //
 // door.Doorway:
 // ["dwy", "ref", "artAdjNoun", "prepPhrase", plural, mass, bulk,
@@ -136,7 +139,7 @@ func loadItemContainer(data []interface{}) error {
     nicp.AddSide(s, json2TVal(mbl[0]), json2TVal(mbl[1]))
   }
   
-  ref.Register(nicp)
+  ref.Reregister(nicp)
   return nil
 }
 
@@ -150,7 +153,7 @@ func loadDoorway(data []interface{}) error {
     Item: *(nip.(*thing.Item)),
     WillToggle: data[6].(bool),
   }
-  ref.Register(ndwyp)
+  ref.Reregister(ndwyp)
   return nil
 }
 
@@ -162,6 +165,17 @@ func loadDoor(data []interface{}) error {
   dwy1 := ref.Deref(data[1].(string)).(*door.Doorway)
   is_open := data[2].(bool)
   door.Bind(dwy0, dwy1, is_open)
+  return nil
+}
+
+// loadClothing()
+// [ "ref", "artAdjNoun", "prepPhrase", plural, mass, bulk, "slot" ]
+//
+func loadClothing(data []interface{}) error {
+  loadItem(data[:6])
+  nip := ref.Deref(data[0].(string)).(*thing.Item)
+  slot := data[6].(string)
+  thing.MakeClothing(nip, slot)
   return nil
 }
 
@@ -246,6 +260,7 @@ var initialLoadMap = map[string]LoadFunc {
   "itemc":  loadItemContainer,
   "dwy":    loadDoorway,
   "door":   loadDoor,
+  "cloth":  loadClothing,
   "pop":    populate,
   "mood":   loadMoodMessenger,
   "script": bindScript,
@@ -263,6 +278,7 @@ var mutableLoadMap = map[string]LoadFunc {
   "item":   loadItem,
   "itemc":  loadItemContainer,
   "door":   loadDoor,
+  "cloth":  loadClothing,
   "pop":    populate,
   "data":   loadData,
 }

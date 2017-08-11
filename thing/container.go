@@ -2,7 +2,7 @@
 //
 // dta5 container interface and basic container implementation
 //
-// updated 2017-08-02
+// updated 2017-08-11
 //
 package thing
 
@@ -41,7 +41,7 @@ func NewItemContainer(nref, artAdjNoun, prep string, plural bool,
     Sides: make(map[byte]*ThingList),
   }
   
-  ref.Register(&nic)
+  ref.Reregister(&nic)
   return &nic
 }
 
