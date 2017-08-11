@@ -1,0 +1,13 @@
+> WEAR <thing>
+
+Will cause your to put <thing> on your body, provided
+
+ * you are holding it
+
+ * it can be worn on a spot on your body
+
+ * you are not already wearing something on that spot
+
+.
+
+See also HELP VERB REMOVE.
