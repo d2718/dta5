@@ -7,7 +7,7 @@
 package pc
 
 import(
-        "dta5/msg"; "dta5/name"; "dta5/room"; "dta5/thing";
+        "dta5/door"; "dta5/msg"; "dta5/name"; "dta5/room"; "dta5/thing";
         "dta5/util";
 )
 
@@ -82,6 +82,12 @@ func DoOpen(pp *PlayerChar, verb string,
     loc.Deliver(act_msg)
     t_dobj.SetOpen(true)
     
+    if t_dobj, ok := dobj.(*door.Doorway); ok {
+      od := t_dobj.Other()
+      om := msg.New("%s opens.", util.Cap(od.Normal(0)))
+      od.Loc().Place.(*room.Room).Deliver(om)
+    }
+    
   default:
     pp.QWrite("You cannot open %s.", dobj.Normal(0))
   }
@@ -155,6 +161,12 @@ func DoClose(pp *PlayerChar, verb string,
     
     loc.Deliver(act_msg)
     t_dobj.SetOpen(false)
+    
+    if t_dobj, ok := dobj.(*door.Doorway); ok {
+      od := t_dobj.Other()
+      om := msg.New("%s closes.", util.Cap(od.Normal(0)))
+      od.Loc().Place.(*room.Room).Deliver(om)
+    }
     
   default:
     pp.QWrite("You cannot close %s.", dobj.Normal(0))
