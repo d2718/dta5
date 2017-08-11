@@ -23,7 +23,7 @@ func DoGet(pp *PlayerChar, verb string,
   bod := pp.Body()
   rh, _ := bod.HeldIn("right_hand")
   lh, _ := bod.HeldIn("left_hand")
-  if (rh != nil) && (rh != nil) {
+  if (rh != nil) && (lh != nil) {
     pp.QWrite("You don't have a free hand to pick anything up.")
     return
   }

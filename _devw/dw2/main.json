@@ -13,11 +13,18 @@
 ["dwy",     "r1-t2", "the northern flapping screen door", "", false, "x", "x", true ]
 ["dwy",     "r1-t3", "the southern flapping screen door", "", false, "x", "x", true ]
           
-["item",    "r2-t1", "a blue baseball cap", "", false, 0.2, 0.3 ]
+["cloth",   "r2-t1", "a blue baseball cap", "", false, 0.2, 0.3, "head" ]
 ["itemc",   "r2-t2", "a green plastic bucket", "with cartoonish ducks on it", false, 0.2, 2.0, false, true,
           { "i": [5, 2]} ]
 ["item",    "r2-t3", "a tattered tan towel", "", false, 0.25, 1]
 ["dwy",     "r2-t4", "a flapping screen door", "", false, "x", "x", true ]
+["cloth",   "r2-t5", "some grey athletic shorts", "", false, 0.2, 1, "pants" ]
+["cloth",   "r2-t6", "some brightly-colored swimming trunks", "", false, 0.2, 1, "pants" ]
+["cloth",   "r2-t7", "some blue-tinted swim goggles", "", false, 0.05, 0.2, "face" ]
+["cloth",   "r2-t8", "a faded blue hoodie", "with \"UNC\" in large letters on the front",
+            false, 0.5, 0.75, "shirt" ]
+["itemc",   "r2-t9", "a battered plastic lost-and-found bin", "", false, 1.5, 300,
+          false, true, { "i": [100, 300], "b": [50, "x"] } ]
 
 ["itemc",   "r3-t1", "a black plastic garbage bag", "", false, 0.1, 1, false, true,
           { "i": [30, 55] } ]
@@ -43,7 +50,9 @@
 ["item",    "r8-t1", "a cyclone fence", "", false, "x", "x" ]
 
 ["pop", "r1", "s", "r1-t1", "r1-t2", "r1-t3" ]
-["pop", "r2", "c", "r2-t1", "r2-t2", "r2-t3" ]
+["pop", "r2", "c", "r2-t9" ]
+["pop", "r2-t9", "i", "r2-t1", "r2-t2", "r2-t3", "r2-t5", "r2-t6", "r2-t7",
+        "r2-t8" ]
 ["pop", "r2", "s", "r2-t4" ]
 ["pop", "r3", "s", "r3-t4" ]
 ["pop", "r3", "c", "r3-t1", "r3-t2", "r3-t3" ]

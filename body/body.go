@@ -4,7 +4,7 @@
 // Bodies are for Things (like PlayerChars) that can wear clothes and
 // participate in combat.
 //
-// updated 2017-08-10
+// updated 2017-08-11
 //
 package body
 
@@ -22,8 +22,9 @@ type Interface interface {
   WornSlotName(string) string
   HeldIn(string) (thing.Thing, bool)
   HeldSlotKeys() []string
-  HeldSlotName() string
+  HeldSlotName(string) string
   SetHeld(string, thing.Thing)
+  IsHolding(thing.Thing) bool
 }
 
 type Bodied interface {
@@ -50,6 +51,11 @@ var BasicBodyParts = map[string]string {
   
   // nonhumanoid body parts may follow
   
+}
+
+var BasicHeldParts = map[string]string {
+  "left_hand": "in {pp} left hand",
+  "right_hand": "in {pp} right hand",
 }
 
 type BasicBody struct {
@@ -84,9 +90,21 @@ func (bb BasicBody) HeldSlotKeys() []string {
   }
   return slots
 }
+func (bb BasicBody) HeldSlotName(slot string) string {
+  return BasicHeldParts[slot]
+}
 
 func (bbp *BasicBody) SetHeld(slot string, t thing.Thing) {
   bbp.holdSlots[slot] = t
+}
+
+func (bb BasicBody) IsHolding(t thing.Thing) bool {
+  for _, v := range bb.holdSlots {
+    if v == t {
+      return true
+    }
+  }
+  return false
 }
 
 func NewHumaniod() *BasicBody {
@@ -104,7 +122,7 @@ func NewHumaniod() *BasicBody {
       "hands": 1,
       "pants": 1,
       "feet": 1,
-      "misc": 20,
+      "misc": 16,
     },
     holdSlots: map[string]thing.Thing {
       "right_hand": nil,

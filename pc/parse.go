@@ -12,7 +12,7 @@ import( "strings";
 
 var parseVerbs []string = []string{
   "close", "drop", "exits", "get", "go", "help", "inventory", "look", "lock",
-  "open", "put", "say", "swap", "take", "unlock",
+  "open", "put", "remove", "say", "swap", "take", "unlock", "wear",
   
   // directional emote verbs (pc/emote.go)
   "blink", "chuckle", "gaze", "frown", "glance", "grin", "lean",
@@ -50,10 +50,12 @@ var parseDispatch map[string]ParseFunc = map[string]ParseFunc {
   "look":       ParseLikeLook,
   "open":       ParseLikeLook,
   "put":        ParseLikePut,
+  "remove":     ParseLikePut,
   "say":        ParseIntransitive,
   "swap":       ParseIntransitive,
   "take":       ParseLikeLook,
   "unlock":     ParseLikeLock,
+  "wear":       ParseLikePut,
   
   // directional emote verbs
   
@@ -87,10 +89,12 @@ var doDispatch map[string]DoFunc = map[string]DoFunc {
   "look":       DoLook,
   "open":       DoOpen,
   "put":        DoPut,
+  "remove":     DoRemove,
   "say":        DoSay,
   "swap":       DoSwap,
   "take":       DoGet,
   "unlock":     DoLock, // this is correct
+  "wear":       DoWear,
   
   // directional emote verbs
 
