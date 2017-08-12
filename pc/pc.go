@@ -65,19 +65,11 @@ func (pp *PlayerChar) SetLoc(loc thing.LocVec) {
   pp.where = loc
 }
 
-func (p PlayerChar) Data(tok string) interface{} {
-  if thing.Data[p.ref] == nil {
-    return nil
-  } else {
-    return thing.Data[p.ref][tok]
-  }
+func (p PlayerChar) Data(key string) interface{} {
+  return ref.GetData(p, key)
 }
-
-func (p PlayerChar) SetData(tok string, val interface{}) {
-  if thing.Data[p.ref] == nil {
-    thing.Data[p.ref] = make(map[string]interface{})
-  }
-  thing.Data[p.ref][tok] = val
+func (p PlayerChar) SetData(key string, val interface{}) {
+  ref.SetData(p, key, val)
 }
 
 var PlayerChars = make(map[string]*PlayerChar)

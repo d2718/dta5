@@ -77,6 +77,13 @@ func (r Room) Desc() string {
   return desc.GetDesc(*(r.descPage), r.ref)
 }
 
+func (r Room) Data(key string) interface{} {
+  return ref.GetData(r, key)
+}
+func (r Room) SetData(key string, val interface{}) {
+  ref.SetData(r, key, val)
+}
+
 func (r Room) Nav(d NavDir) ref.Interface {
   x := r.nav[int(d)]
   if x == "" {

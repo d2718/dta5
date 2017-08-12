@@ -9,6 +9,7 @@
 [ "room", "r9", "Branbury State Park, Parking Lot", "r6", "r7", "", "", "", "", "", "r8" ]
 
 
+["rem", "r1 East Shelter"]
 ["itemc",   "r1-t1", "some rough wooden picnic tables", "", true, "x", "x", false, false,
           { "o": [1000, 3000], "u": ["x", 3000] } ]
 ["dwy",     "r1-t2", "the northern flapping screen door", "", false, "x", "x", true ]
@@ -17,6 +18,7 @@
 ["pop", "r1", "s", "r1-t1", "r1-t2", "r1-t3" ]
 
 
+["rem", "r2 Branbury Beach Green, East"]
 ["cloth",   "r2-t1", "a blue baseball cap", "", false, 0.2, 0.3, "head" ]
 ["itemc",   "r2-t2", "a green plastic bucket", "with cartoonish ducks on it", false, 0.2, 2.0, false, true,
           { "i": [5, 2]} ]
@@ -36,6 +38,7 @@
 ["pop", "r2", "s", "r2-t4" ]
 
 
+["rem", "r3 West Shelter"]
 ["itemc",   "r3-t1", "a black plastic garbage bag", "", false, 0.1, 1, false, true,
           { "i": [30, 55] } ]
 ["itemc",   "r3-t2", "a metal first-aid chest", "", false, "x", "x", true, false,
@@ -52,6 +55,7 @@
 ["pop", "r3", "c", "r3-t1", "r3-t2", "r3-t3" ]
 
 
+["rem", "r4 Branbury Beach Green, West"]
 ["itemc",   "r4-t1", "a battered metal lunch box", "", false, 0.5, 1.5, true, false,
           { "i": [ 10, 1.5 ] } ]
 ["clothc",  "r4-t2", "a red and blue backpack", "emblazoned with Spider-Man imagery", false,
@@ -61,30 +65,40 @@
 ["pop", "r4", "c", "r4-t2" ]
 
 
+["rem", "r5 Branbury Beach, Picnic Area"]
 ["itemc",   "r5-t1", "some weathered plank tables", "", true, "x", "x", false, false,
           { "o": [12000, 50000] } ]
 
 ["pop", "r5", "s", "r5-t1" ]
 
 
+["rem", "r6 Branbury State Park, South of Facility"]
 ["dwy",     "r6-t1", "a flapping screen door", "", false, "x", "x", true ]
 
 ["pop", "r6", "s", "r6-t1" ]
 
 
+["rem", "r7 Branbury State Park, Playground"]
 ["item",    "r7-t1", "some playground equipment", "", false, "x", "x" ]
 
 ["pop", "r7", "s", "r7-t1" ]
 
 
+["rem", "r8 Branbury State Park, Boat Launch"]
 ["item",    "r8-t1", "a cyclone fence", "", false, "x", "x" ]
 
 ["pop", "r8", "s", "r8-t1" ]
 
 
+["rem", "r9 Branbury State Park, Parking Lot"]
+
+
+["rem", "Miscellaneous stuff"]
 ["build", "key", "r3-t3", "r3-t2", true]
 
 ["door", "r1-t2", "r2-t4", false]
 ["door", "r1-t3", "r6-t1", false]
 
+
+["rem", "Loading other files"]
 ["load", "world/moods.json"]
