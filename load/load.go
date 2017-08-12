@@ -21,6 +21,10 @@
 // thing.Clothing:
 // ["cloth", "ref", "artAdjNoun", "prepPhrase", plural, mass, bulk, "slot" ]
 //
+// thing.WornContainer:
+// ["clothc", "ref", "artAdjNoun", "prepPhrase", plural, mass, bulk,
+//            "slot", will_toggle, is_open, mass_held, bulk_held ]
+//
 // door.Doorway:
 // ["dwy", "ref", "artAdjNoun", "prepPhrase", plural, mass, bulk,
 //  WillToggle ]
@@ -44,8 +48,8 @@
 package load
 
 import( "encoding/json"; "fmt"; "os"; "path/filepath";
-        "dta5/door"; "dta5/log"; "dta5/mood"; "dta5/ref"; "dta5/room";
-        "dta5/scripts"; "dta5/thing";
+        "dta5/door"; "dta5/log"; "dta5/mood"; "dta5/ref";
+        "dta5/room"; "dta5/scripts"; "dta5/thing";
         "dta5/load/build";
 )
 
@@ -179,6 +183,21 @@ func loadClothing(data []interface{}) error {
   return nil
 }
 
+// loadWornContainer()
+// [ "ref", "artAdjNoun", "prepPhrase", plural, mass, bulk,
+//   "slot", will_toggle, is_open, mass_held, bulk_held ]
+func loadWornContainer(data []interface{}) error {
+  loadItem(data[:6])
+  nip := ref.Deref(data[0].(string)).(*thing.Item)
+  slot := data[6].(string)
+  will_toggle := data[7].(bool)
+  is_open     := data[8].(bool)
+  mass_held   := json2TVal(data[9])
+  bulk_held   := json2TVal(data[10])
+  thing.MakeWornContainer(nip, slot, will_toggle, is_open, mass_held, bulk_held)
+  return nil
+}
+
 // populate()
 // [ ref, side, refs... ]
 //
@@ -200,7 +219,7 @@ func populate(data []interface{}) error {
                       data[1], side, c)
       return fmt.Errorf("%q is not a recognizable side indentifier", data[1])
     }
-  case *thing.ItemContainer:
+  case thing.Container:
     targ = c.Side(side)
   }
   
@@ -261,6 +280,7 @@ var initialLoadMap = map[string]LoadFunc {
   "dwy":    loadDoorway,
   "door":   loadDoor,
   "cloth":  loadClothing,
+  "clothc": loadWornContainer,
   "pop":    populate,
   "mood":   loadMoodMessenger,
   "script": bindScript,
@@ -279,6 +299,7 @@ var mutableLoadMap = map[string]LoadFunc {
   "itemc":  loadItemContainer,
   "door":   loadDoor,
   "cloth":  loadClothing,
+  "clothc": loadWornContainer,
   "pop":    populate,
   "data":   loadData,
 }

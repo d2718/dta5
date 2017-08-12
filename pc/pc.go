@@ -8,7 +8,7 @@ package pc
 
 import( "encoding/json"; "fmt"; "net"; "os"; "path/filepath"; "sync"; "time";
         "golang.org/x/crypto/bcrypt";
-        "dta5/act"; "dta5/body";
+        "dta5/act"; "dta5/body"; "dta5/desc";
         "dta5/name"; "dta5/load"; "dta5/log"; "dta5/msg"; "dta5/ref";
         "dta5/room"; "dta5/save"; "dta5/thing";
 )
@@ -234,6 +234,10 @@ func Login(newConn net.Conn) error {
   for _, t_id := range ps.Inventory {
     new_pc.Inventory.Add(ref.Deref(t_id).(thing.Thing))
   }
+  unlimbo_func := func (t thing.Thing) {
+    desc.UnLimbo(t)
+  }
+  new_pc.Inventory.Walk(unlimbo_func)
   
   if ps.RightHand != "" {
     new_pc.Body().SetHeld("right_hand", ref.Deref(ps.RightHand).(thing.Thing))

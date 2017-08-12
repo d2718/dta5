@@ -269,6 +269,19 @@ func (tl ThingList) EnglishList() string {
   }
 }
 
+func (tl ThingList) Walk(f func(Thing)) {
+  for _, t := range tl.Things {
+    f(t)
+    if ot, ok := t.(Container); ok {
+      for _, s := range []byte{IN, ON, BEHIND, UNDER} {
+        if tk := ot.Side(s); tk != nil {
+          tk.Walk(f)
+        }
+      }
+    }
+  }
+}
+
 type Item struct {
   ref string
   name.NormalName
