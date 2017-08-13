@@ -2,7 +2,7 @@
 //
 // dta5 PlayerChar open/close verbs
 //
-// updated 2017-08-05
+// updated 2017-08-13
 //
 package pc
 
@@ -23,28 +23,6 @@ func DoOpen(pp *PlayerChar, verb string,
   }
   
   switch t_dobj := dobj.(type) {
-  //~ case *door.Doorway:
-    //~ if t_dobj.IsOpen() {
-      //~ pp.QWrite("%s is already open.", util.Cap(dobj.Normal(name.DEF_ART)))
-      //~ return
-    //~ }
-    //~ if t_dobj.WillToggle == false {
-      //~ pp.QWrite("You cannot open %s.", dobj.Normal(name.DEF_ART))
-      //~ return
-    //~ }
-    
-    //~ o_dwy := t_dobj.Other()
-    //~ o_loc := o_dwy.Loc().Place.(*room.Room)
-    
-    //~ act_msg := msg.New("%s opens %s.", util.Cap(pp.Normal(0)), dobj.Normal(0))
-    //~ act_msg.Add(pp, "You open %s.", dobj.Normal(0))
-    //~ oth_msg := msg.New("%s opens.", util.Cap(o_dwy.Normal(0)))
-    
-    //~ pp.Loc().Place.(*room.Room).Deliver(act_msg)
-    //~ o_loc.Deliver(oth_msg)
-    
-    //~ t_dobj.SetOpen(true)
-  
   case thing.Openable:
     if t_dobj.IsOpen() {
       pp.QWrite("%s is already open.", util.Cap(dobj.Normal(name.DEF_ART)))
@@ -85,7 +63,7 @@ func DoOpen(pp *PlayerChar, verb string,
     if t_dobj, ok := dobj.(*door.Doorway); ok {
       od := t_dobj.Other()
       om := msg.New("%s opens.", util.Cap(od.Normal(0)))
-      od.Loc().Place.(*room.Room).Deliver(om)
+      od.Loc().Place.(msg.Messageable).Deliver(om)
     }
     
   default:
@@ -103,28 +81,6 @@ func DoClose(pp *PlayerChar, verb string,
   }
   
   switch t_dobj := dobj.(type) {
-  //~ case *door.Doorway:
-    //~ if t_dobj.IsOpen() == false {
-      //~ pp.QWrite("%s is already closed.", util.Cap(dobj.Normal(name.DEF_ART)))
-      //~ return
-    //~ }
-    //~ if t_dobj.WillToggle == false {
-      //~ pp.QWrite("You cannot close %s.", dobj.Normal(name.DEF_ART))
-      //~ return
-    //~ }
-    
-    //~ o_dwy := t_dobj.Other()
-    //~ o_loc := o_dwy.Loc().Place.(*room.Room)
-    
-    //~ act_msg := msg.New("%s closes %s.", util.Cap(pp.Normal(0)), dobj.Normal(0))
-    //~ act_msg.Add(pp, "You close %s.", dobj.Normal(0))
-    //~ oth_msg := msg.New("%s closes.", util.Cap(o_dwy.Normal(0)))
-    
-    //~ pp.Loc().Place.(*room.Room).Deliver(act_msg)
-    //~ o_loc.Deliver(oth_msg)
-    
-    //~ t_dobj.SetOpen(false)
-  
   case thing.Openable:
     if t_dobj.IsOpen() == false {
       pp.QWrite("%s is already closed.", util.Cap(dobj.Normal(name.DEF_ART)))
@@ -165,7 +121,7 @@ func DoClose(pp *PlayerChar, verb string,
     if t_dobj, ok := dobj.(*door.Doorway); ok {
       od := t_dobj.Other()
       om := msg.New("%s closes.", util.Cap(od.Normal(0)))
-      od.Loc().Place.(*room.Room).Deliver(om)
+      od.Loc().Place.(msg.Messageable).Deliver(om)
     }
     
   default:

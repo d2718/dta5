@@ -98,6 +98,14 @@ func sideStr(s byte) string {
   }
 }
 
+func (v LocVec) String() string {
+  if t, ok := v.Place.(Thing); ok {
+    return fmt.Sprintf("%s %s", sideStr(v.Side), t.Normal(0))
+  } else {
+    return ""
+  }
+}
+
 type Thing interface {
   ref.Interface
   name.Name

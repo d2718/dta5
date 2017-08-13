@@ -2,7 +2,7 @@
 //
 // the dta5 player character command parser
 //
-// updated 2017-08-10
+// updated 2017-08-13
 //
 package pc
 
@@ -44,6 +44,7 @@ var parseDispatch map[string]ParseFunc = map[string]ParseFunc {
   "drop":       ParseLikePut,
   "exits":      ParseIntransitive,
   "get":        ParseLikeLook,
+  "go":         ParseGo,
   "help":       ParseIntransitive,
   "inventory":  ParseIntransitive,
   "lock":       ParseLikeLock,
@@ -83,6 +84,7 @@ var doDispatch map[string]DoFunc = map[string]DoFunc {
   "drop":       DoPut,
   "exits":      DoExits,
   "get":        DoGet,
+  "go":         DoMove,
   "help":       DoHelp,
   "inventory":  DoInventory,
   "lock":       DoLock,
@@ -605,6 +607,18 @@ func ParseEmote(subj *PlayerChar, verb string, toks []string, text string) {
     }
     if dir_num, ok := emoteDirs[dir]; ok {
       DoEmoteDir(subj, verb, dir_num)
+      return
+    }
+  }
+  
+  ParseLikeLook(subj, verb, toks, text)
+}
+
+func ParseGo(subj *PlayerChar, verb string, toks []string, text string) {
+  if len(toks) == 1 {
+    dir := toks[0]
+    if dir_num, ok := cardDirs[dir]; ok {
+      DoMoveDir(subj, dir_num)
       return
     }
   }

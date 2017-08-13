@@ -7,6 +7,7 @@
 [ "room", "r7", "Branbury State Park, Playground", "r5", "", "", "", "", "r9", "r6" ]
 [ "room", "r8", "Branbury State Park, Boat Launch", "", "", "r4", "", "r9" ]
 [ "room", "r9", "Branbury State Park, Parking Lot", "r6", "r7", "", "", "", "", "", "r8" ]
+[ "room", "r10", "Underground Chamber", "", "", "", "", "", "", "" , "", "r10-t1" ]
 
 
 ["rem", "r1 East Shelter"]
@@ -79,9 +80,12 @@
 
 
 ["rem", "r7 Branbury State Park, Playground"]
-["item",    "r7-t1", "some playground equipment", "", false, "x", "x" ]
+["itemc",   "r7-t1", "some playground equipment", "", false, "x", "x", false, false,
+          { "b": ["x", "x"] } ]
+["dwy",     "r7-t2", "a rusted iron manhole", "", false, "x", "x", true ]
 
 ["pop", "r7", "s", "r7-t1" ]
+["pop", "r7-t1", "b", "r7-t2" ]
 
 
 ["rem", "r8 Branbury State Park, Boat Launch"]
@@ -92,12 +96,19 @@
 
 ["rem", "r9 Branbury State Park, Parking Lot"]
 
+["rem", "r10", "Underground Chamber"]
+["dwy",  "r10-t1", "an/a iron-rimmed hole", "in the ceiling of the chamber", false, "x", "x", true ]
+["item", "r10-t2", "some rusty iron gratings", "", true, "x", "x" ]
+
+["pop", "r10", "s", "r10-t1", "r10-t2" ]
+
 
 ["rem", "Miscellaneous stuff"]
 ["build", "key", "r3-t3", "r3-t2", true]
 
 ["door", "r1-t2", "r2-t4", false]
 ["door", "r1-t3", "r6-t1", false]
+["door", "r7-t2", "r10-t1", false]
 
 
 ["rem", "Loading other files"]
