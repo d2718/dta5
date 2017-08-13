@@ -2,11 +2,17 @@
 //
 // dta5 loading and world-building module
 //
-// 2017-08-11
-
-// In data file, formats are
+// updated 2017-08-12
 //
-// [ type_string, ref, ... ]
+// Worlds in dta5 are specified (and saved!) as JSON files; each JSON file
+// contains a series of lists. The first element in each list is a string
+// designating which type of object is to be created (e.g., "room" is to
+// create a room.Room) or action to be taken (e.g., "load" to load the
+// contents of another file); the following elements are parameters for the
+// associated object or action.
+//
+// The various formats are listed here as a shorthand; see the individual
+// loadXXX() functions below for more details.
 //
 // room.Room:
 // ["room", "ref", "title", "nav targets"... ]
@@ -21,9 +27,12 @@
 // thing.Clothing:
 // ["cloth", "ref", "artAdjNoun", "prepPhrase", plural, mass, bulk, "slot" ]
 //
+// thing.WornContainer:
+// ["clothc", "ref", "artAdjNoun", "prepPhrase", plural, mass, bulk,
+//            "slot", will_toggle, is_open, mass_held, bulk_held ]
+//
 // door.Doorway:
-// ["dwy", "ref", "artAdjNoun", "prepPhrase", plural, mass, bulk,
-//  WillToggle ]
+// ["dwy", "ref", "artAdjNoun", "prepPhrase", plural, mass, bulk, WillToggle ]
 //
 // to populate a Room or Container
 // ["pop", "ref", "side_string", "ref_list"... ]
@@ -44,13 +53,16 @@
 package load
 
 import( "encoding/json"; "fmt"; "os"; "path/filepath";
-        "dta5/door"; "dta5/log"; "dta5/mood"; "dta5/ref"; "dta5/room";
-        "dta5/scripts"; "dta5/thing";
+        "dta5/door"; "dta5/log"; "dta5/mood"; "dta5/ref";
+        "dta5/room"; "dta5/scripts"; "dta5/thing";
         "dta5/load/build";
 )
 
 var WorldDir string
 
+// The various loadXXX() functions use this to help translate human-readable
+// side designation strings into the appropriate byte values.
+//
 var sideMap map[rune]byte = map[rune]byte {
   's':  room.SCENERY,
   'c':  room.CONTENTS,
@@ -60,10 +72,15 @@ var sideMap map[rune]byte = map[rune]byte {
   'u':  thing.UNDER,
 }
 
+// This converts a human-readable string to the appropriate byte representing
+// a location's side.
+//
 func str2side(s string) byte {
   return sideMap[ []rune(s)[0] ]
 }
 
+// Converts a JSON value (string of float) into a thing.TVal.
+//
 func json2TVal(x interface{}) interface{} {
   var v interface{}
   switch vt := x.(type) {
@@ -83,10 +100,21 @@ func log(lvl dtalog.LogLvl, fmtstr string, args ...interface{}) {
   dtalog.Log(lvl, fmt.Sprintf("load.go: " + fmtstr, args...))
 }
 
+// All of the various loadXXX() functions that operate on the individual
+// JSON lists are of this type.
+//
 type LoadFunc func([]interface{}) error
 
 // loadRoom()
 // [ ref, title, nav_ref_targets... ]
+//
+// Creates a room.Room
+//   * ref   string: the Room's reference string
+//   * title string: the name of the Room
+//   * nav_ref_targets string...: reference strings of the targets of moving
+//        in the cardinal directions from this room (either other Rooms, or
+//        door.Doorways; in the order specified in the const section of
+//        room/room.go
 //
 func loadRoom(data []interface{}) error {
   if len(data) < 2 {
@@ -105,6 +133,11 @@ func loadRoom(data []interface{}) error {
 // loadItem()
 // [ ref, artAdjNoun, prep, plural, mass, bulk ]
 //
+// Creates a thing.Item
+//   * ref string: the Item's reference string
+//   * artAdjNoun, prep string, plural bool: the Item's name (see dta5/name)
+//   * mass, bulk interface{}: to be read by json2TVal()
+//
 func loadItem(x []interface{}) error {
   r          := x[0].(string)
   artAdjNoun := x[1].(string)
@@ -119,7 +152,15 @@ func loadItem(x []interface{}) error {
 
 // loadItemContainer()
 // [ref, artAdjNoun, prep, plural, mass, bulk, toggleable, open, 
-// { "i": [mass_limit, bulk_limit], "o": [mass_limit, bulk_limit] ... } ]
+//       { "i": [mass_limit, bulk_limit], "o": [mass_limit, bulk_limit] ... } ]
+//
+// Creates a thing.ItemContainer
+//   * ref, artAdjNoun, prep, plural, mass, bulk: see loadItem() above
+//   * toggleable bool: whether the container can be opened/closed
+//   * open bool: whether it begins in the open state
+//   * the final element is a map that specifies the limits of the various
+//         sides of the container; keys should be from sideMap (above), and
+//         [mass, bulk] tuples should have values readable by json2TVal
 //
 func loadItemContainer(data []interface{}) error {
   loadItem(data[:6])
@@ -146,6 +187,10 @@ func loadItemContainer(data []interface{}) error {
 // loadDoorway()
 // [ ref, artAdjNoun, prep, plural, mass, bulk, will_toggle ]
 //
+// Creates a door.Doorway
+//   * ref, artAdjNoun, prep, plural, mass, bulk: see loadItem() above
+//   * will_toggle bool: whether the doorway can be opened/closed
+//
 func loadDoorway(data []interface{}) error {
   loadItem(data[:6])
   nip := ref.Deref(data[0].(string))
@@ -160,6 +205,11 @@ func loadDoorway(data []interface{}) error {
 // loadDoor()
 // [ dwy0, dwy1, isOpen ]
 //
+// Creates a door.Door (that is, a binding between two door.Doorways to
+// create a passage between Rooms)
+//   * dwy0, dwy1 string: refs of the doorways to bind
+//   * isOpen bool: whether the Door starts in the open state
+//
 func loadDoor(data []interface{}) error {
   dwy0 := ref.Deref(data[0].(string)).(*door.Doorway) // again, Jesus
   dwy1 := ref.Deref(data[1].(string)).(*door.Doorway)
@@ -169,7 +219,12 @@ func loadDoor(data []interface{}) error {
 }
 
 // loadClothing()
-// [ "ref", "artAdjNoun", "prepPhrase", plural, mass, bulk, "slot" ]
+// [ ref, artAdjNoun, prepPhrase, plural, mass, bulk, slot ]
+//
+// Creates a thing.Clothing
+//   * ref, artAdjNoun, prepPhrase, plural, mass, bulk: see loadItem() above
+//   * slot string: the name of the clothing slot this occupies (see
+//         thing/wearable.go and the dta5/body package
 //
 func loadClothing(data []interface{}) error {
   loadItem(data[:6])
@@ -179,8 +234,35 @@ func loadClothing(data []interface{}) error {
   return nil
 }
 
+// loadWornContainer()
+// [ ref, artAdjNoun, prepPhrase, plural, mass, bulk, slot,
+//        will_toggle, is_open, mass_held, bulk_held ]
+//
+// Creates a thing.WornContainer
+//   * ref, artAdjNoun, prepPhrase, plural, mass, bulk, slot: see loadClothing()
+//   * will_toggle bool: whether the container is opeable/closable
+//   * is_open bool: whether the container begins in the open state
+//   * mass_held, bulk_held: to be read by json2Tval()
+//
+func loadWornContainer(data []interface{}) error {
+  loadItem(data[:6])
+  nip := ref.Deref(data[0].(string)).(*thing.Item)
+  slot := data[6].(string)
+  will_toggle := data[7].(bool)
+  is_open     := data[8].(bool)
+  mass_held   := json2TVal(data[9])
+  bulk_held   := json2TVal(data[10])
+  thing.MakeWornContainer(nip, slot, will_toggle, is_open, mass_held, bulk_held)
+  return nil
+}
+
 // populate()
 // [ ref, side, refs... ]
+//
+// Puts thing.Things in a room.Room or a thing.Container.
+//   * ref string: the reference string of the Room/Container to load
+//   * side string: should start with an appropriate letter (see sideMap above)
+//   * refs string...: reference strings of the Things to get loaded
 //
 func populate(data []interface{}) error {
   r    := data[0].(string)
@@ -200,7 +282,7 @@ func populate(data []interface{}) error {
                       data[1], side, c)
       return fmt.Errorf("%q is not a recognizable side indentifier", data[1])
     }
-  case *thing.ItemContainer:
+  case thing.Container:
     targ = c.Side(side)
   }
   
@@ -213,6 +295,11 @@ func populate(data []interface{}) error {
 
 // loadMoodMessenger()
 // [ min_secs, max_secs, [ room_refs... ], messages... ] 
+//
+// Create a mood.MoodMessenger
+//   * min_secs, max_secs float: limits of how often messages are delivered
+//   * room_refs [ string ... ]: refs of Rooms where messages are delivered
+//   * messages string...: message strings
 //
 func loadMoodMessenger(data []interface{}) error {
   min := data[0].(float64)
@@ -233,7 +320,13 @@ func loadMoodMessenger(data []interface{}) error {
 }
 
 // bindScript()
-// [ "obj_ref", "verb", "script_tag" ]
+// [ obj_ref, verb, script_tag ]
+//
+// Bind a script (see dta5/scripts) to a thing.Thing
+//   * ref string: reference of Thing to bind
+//   * verb string string: verb that will trigger the script
+//   * script_tag string: key in scripts.Scripts that maps to the function
+//         to bind
 //
 func bindScript(data []interface{}) error {
   obj := ref.Deref(data[0].(string)).(thing.Thing)
@@ -244,15 +337,20 @@ func bindScript(data []interface{}) error {
   return nil
 }
 
+// loadData()
+// [ stuff ]
+//
+// Loads ref.Data; you probably don't ever need to use this explicitly; it'll
+// get written and read during the saving/loading of game states.
+//
 func loadData(data []interface{}) error {
   datam := data[0].(map[string]interface{})
-  thing.Data = make(map[string]map[string]interface{})
+  ref.Data = make(map[string]map[string]interface{})
   for t_ref, t_dat := range datam {
-    thing.Data[t_ref] = t_dat.(map[string]interface{})
+    ref.Data[t_ref] = t_dat.(map[string]interface{})
   }
   return nil
 }
-  
 
 var initialLoadMap = map[string]LoadFunc {
   "room":   loadRoom,
@@ -261,6 +359,7 @@ var initialLoadMap = map[string]LoadFunc {
   "dwy":    loadDoorway,
   "door":   loadDoor,
   "cloth":  loadClothing,
+  "clothc": loadWornContainer,
   "pop":    populate,
   "mood":   loadMoodMessenger,
   "script": bindScript,
@@ -279,6 +378,7 @@ var mutableLoadMap = map[string]LoadFunc {
   "itemc":  loadItemContainer,
   "door":   loadDoor,
   "cloth":  loadClothing,
+  "clothc": loadWornContainer,
   "pop":    populate,
   "data":   loadData,
 }

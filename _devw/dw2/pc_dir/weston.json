@@ -1,5 +1,1 @@
-{"RefToken":"pc1","PassHash":"$2a$04$YNUCazpTxUEAYc7JUwD5GeyAm7jc2zIsPdDRVOOuuneCD6E9I7Ou2","NameTitle":"","NameFirst":"Weston","NameRest":"","RightHand":"","LeftHand":"","Gender":2,"Location":"r2","Inventory":["r2-t1","r2-t6","r2-t7","r2-t8"]}
-["cloth","r2-t1","a blue baseball cap","",false,0.2,0.3,"head"]
-["cloth","r2-t6","some brightly-colored swimming trunks","",false,0.2,1,"pants"]
-["cloth","r2-t7","some blue-tinted swim goggles","",false,0.05,0.2,"face"]
-["cloth","r2-t8","a faded blue hoodie","with \"UNC\" in large letters on the front",false,0.5,0.75,"shirt"]
+{"RefToken":"pc1","PassHash":"$2a$04$YNUCazpTxUEAYc7JUwD5GeyAm7jc2zIsPdDRVOOuuneCD6E9I7Ou2","NameTitle":"","NameFirst":"Weston","NameRest":"","RightHand":"","LeftHand":"","Gender":2,"Location":"r7","Inventory":[]}

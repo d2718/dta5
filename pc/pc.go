@@ -8,7 +8,7 @@ package pc
 
 import( "encoding/json"; "fmt"; "net"; "os"; "path/filepath"; "sync"; "time";
         "golang.org/x/crypto/bcrypt";
-        "dta5/act"; "dta5/body";
+        "dta5/act"; "dta5/body"; "dta5/desc";
         "dta5/name"; "dta5/load"; "dta5/log"; "dta5/msg"; "dta5/ref";
         "dta5/room"; "dta5/save"; "dta5/thing";
 )
@@ -65,19 +65,11 @@ func (pp *PlayerChar) SetLoc(loc thing.LocVec) {
   pp.where = loc
 }
 
-func (p PlayerChar) Data(tok string) interface{} {
-  if thing.Data[p.ref] == nil {
-    return nil
-  } else {
-    return thing.Data[p.ref][tok]
-  }
+func (p PlayerChar) Data(key string) interface{} {
+  return ref.GetData(p, key)
 }
-
-func (p PlayerChar) SetData(tok string, val interface{}) {
-  if thing.Data[p.ref] == nil {
-    thing.Data[p.ref] = make(map[string]interface{})
-  }
-  thing.Data[p.ref][tok] = val
+func (p PlayerChar) SetData(key string, val interface{}) {
+  ref.SetData(p, key, val)
 }
 
 var PlayerChars = make(map[string]*PlayerChar)
@@ -234,6 +226,10 @@ func Login(newConn net.Conn) error {
   for _, t_id := range ps.Inventory {
     new_pc.Inventory.Add(ref.Deref(t_id).(thing.Thing))
   }
+  unlimbo_func := func (t thing.Thing) {
+    desc.UnLimbo(t)
+  }
+  new_pc.Inventory.Walk(unlimbo_func)
   
   if ps.RightHand != "" {
     new_pc.Body().SetHeld("right_hand", ref.Deref(ps.RightHand).(thing.Thing))

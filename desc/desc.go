@@ -29,6 +29,7 @@ type Page struct{
 
 var Pages map[string]*Page = make(map[string]*Page)
 var Paths []string
+var Limbo map[string]*string
 
 func Initialize(basePath string) error {
   log(dtalog.DBG, "Initialize(%q) called", basePath)
@@ -49,6 +50,7 @@ func Initialize(basePath string) error {
   dir.Close()
   
   Paths = make([]string, 0, len(filez))
+  Limbo = make(map[string]*string)
   
   for _, fname := range filez {
     pth := filepath.Join(basePath, fname)
@@ -66,7 +68,7 @@ func Initialize(basePath string) error {
     dcdr := json.NewDecoder(f)
     var raw interface{}
     var raw_slice []interface{}
-    var i Interface
+    var i ref.Interface
     var idx string
     for dcdr.More() {
       err = dcdr.Decode(&raw)
@@ -83,11 +85,23 @@ func Initialize(basePath string) error {
       }
       
       idx = raw_slice[0].(string)
-      i = ref.Deref(idx).(Interface)
-      i.SetDescPage(cur_ptr)
+      i = ref.Deref(idx)
+      if i == nil {
+        Limbo[idx] = cur_ptr
+      } else {
+        i.(Interface).SetDescPage(cur_ptr)
+      }
     }
   }
   return nil
+}
+
+func UnLimbo(x Interface) {
+  ref_str := x.(ref.Interface).Ref()
+  if sptr, isIn := Limbo[ref_str]; isIn {
+    x.SetDescPage(sptr)
+    delete(Limbo, ref_str)
+  }
 }
 
 func LoadPage(pth string) error {

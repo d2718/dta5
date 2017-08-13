@@ -14,7 +14,7 @@ import( "bufio"; "fmt"; "flag"; "net"; "os"; "path/filepath"; "strings";
         "github.com/d2718/dconfig";
         "dta5/log";
         "dta5/act"; "dta5/desc"; "dta5/door"; "dta5/load"; "dta5/mood";
-        "dta5/pc"; "dta5/ref"; "dta5/room"; "dta5/scripts"; "dta5/thing";
+        "dta5/pc"; "dta5/ref"; "dta5/room"; "dta5/scripts";
         "dta5/save";
 )
 
@@ -134,7 +134,7 @@ func processCommand(cmd string) {
     for _, d := range door.Doors {
       d.Save(*s)
     }
-    thing.SaveData(*s)
+    ref.SaveData(*s)
     scripts.SaveBindings(*s)
     
     log(dtalog.DBG, "processCommand(): save complete")
