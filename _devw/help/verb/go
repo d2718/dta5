@@ -1,0 +1,14 @@
+> GO <direction>
+
+where <direction> is one of the eight cardinal directions (NORTH, NORTHEAST, EAST...) or an abbreviation (N, NE, E...), UP, DOWN, or OUT.
+
+Will navigate to a different location.
+
+> GO <thing>
+> GO <thing> IN|ON|BEHIND|UNDER <other thing>
+
+Will attempt to go through <thing> if appropriate (e.g., if <thing> is a doorway), otherwise will just walk toward it.
+
+> GO BEHIND <thing>
+
+Will walk behind <thing>, if anything can fit back there.

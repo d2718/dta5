@@ -2,13 +2,13 @@
 //
 // dta5 PlayerChar open/close verbs
 //
-// updated 2017-08-13
+// updated 2017-08-14
 //
 package pc
 
 import(
-        "dta5/door"; "dta5/msg"; "dta5/name"; "dta5/room"; "dta5/thing";
-        "dta5/util";
+        "dta5/act"; "dta5/door"; "dta5/msg"; "dta5/name"; "dta5/room";
+        "dta5/scripts"; "dta5/thing"; "dta5/util";
 )
 
 // type DoFunc func(*PlayerChar, string, thing.Thing, string, thing.Thing, string)
@@ -128,3 +128,57 @@ func DoClose(pp *PlayerChar, verb string,
     pp.QWrite("You cannot close %s.", dobj.Normal(0))
   }
 }
+
+// This script is to make doors that will automatically swing shut after
+// being opened.
+
+func AutoCloseScript(obj, subj, dobj, iobj thing.Thing,
+                      verb, prep, text string) bool {
+  
+  if obj != dobj { return true }
+  
+  var delay float64
+  var ok bool
+  var t_dobj thing.Openable
+  
+  if dat := dobj.Data("auto_close_script_delay"); dat != nil {
+    if delay, ok = dat.(float64); !ok {
+      scripts.Log("AutoCloseScript(%q, %q, ..., %q): obj.Data() of wrong type (%T)",
+                  obj.Ref(), verb, text, dat)
+      return true
+    }
+  } else {
+    scripts.Log("AutoCloseScript(%q, %q, ..., %q): obj.Data() is nil",
+                obj.Ref(), verb, text, dat)
+    return true
+  }
+  
+  if t_dobj, ok = dobj.(thing.Openable); !ok {
+    scripts.Log("AutoCloseScript(%q, %q, ..., %q): obj is not thing.Openable",
+                obj.Ref(), verb, text)
+    return true
+  }
+  
+  var close_func = func() error {
+    if t_dobj.IsOpen() {
+      t_dobj.SetOpen(false)
+      m := msg.New("%s closes.", util.Cap(dobj.Normal(0)))
+      dobj.Loc().Place.(msg.Messageable).Deliver(m)
+      
+      if dwy, ok := dobj.(*door.Doorway); ok {
+        o_dwy := dwy.Other()
+        om := msg.New("%s closes.", util.Cap(o_dwy.Normal(0)))
+        o_dwy.Loc().Place.(msg.Messageable).Deliver(om)
+      }
+    }
+    return nil
+  }
+  
+  act.Add(delay, close_func)
+  return true
+}
+
+func init() {
+  scripts.Scripts["auto_close_script"] = AutoCloseScript
+}
+

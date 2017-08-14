@@ -196,7 +196,7 @@ func main() {
   dtalog.Start(dtalog.ERR, os.Stdout)
   dtalog.Start(dtalog.WRN, os.Stdout)
   dtalog.Start(dtalog.MSG, os.Stdout)
-  dtalog.Start(dtalog.DBG, os.Stdout)
+  //dtalog.Start(dtalog.DBG, os.Stdout)
   
   Configure(filepath.Join(worldDir, "conf"))
   pc.PlayerDir = filepath.Join(worldDir, "pc_dir")

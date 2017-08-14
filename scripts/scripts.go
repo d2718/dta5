@@ -6,11 +6,15 @@
 package scripts
 
 import( "fmt";
-        "dta5/log"; "dta5/save"; "dta5/thing";
+        "dta5/log"; "dta5/ref"; "dta5/save"; "dta5/thing";
 )
 
 func log(lvl dtalog.LogLvl, fmtstr string, args ...interface{}) {
   dtalog.Log(lvl, fmt.Sprintf("scripts: " + fmtstr, args...))
+}
+
+func Log(fmtstr string, args ...interface{}) {
+  dtalog.Log(dtalog.WRN, fmt.Sprintf("_script_error_: " + fmtstr, args...))
 }
 
 // return value of true means stuff should continue
@@ -18,11 +22,19 @@ func log(lvl dtalog.LogLvl, fmtstr string, args ...interface{}) {
 type Script func(obj, subj, dobj, iobj thing.Thing, verb, prep, text string) bool
 
 var Scripts = make(map[string]Script)
-
+//
+// defined in pc/get.go
+//
+// "cannot_get_message_script"
+//
 // defined in pc/lock.go
 //
 // "locked_script"
 // "lock_unlock_script"
+//
+// defined in pc/open.go
+//
+// "auto_close_script"
 
 var Bindings = make(map[string]map[string]string)
 
@@ -49,7 +61,7 @@ func Check(subj, dobj, iobj thing.Thing, verb, prep, text string) bool {
   return true
 }
 
-func Bind(obj thing.Thing, verb string, ftag string) {
+func Bind(obj ref.Interface, verb string, ftag string) {
   if _, ok := Scripts[ftag]; ok {
     if _, mok := Bindings[obj.Ref()]; !mok {
       Bindings[obj.Ref()] = make(map[string]string)

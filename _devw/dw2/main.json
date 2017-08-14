@@ -70,6 +70,7 @@
 ["itemc",   "r5-t1", "some weathered plank tables", "", true, "x", "x", false, false,
           { "o": [12000, 50000] } ]
 
+["build", "cantgetmsg", "r5-t1", "What earthly (or unearthly) reason could you have for wanting to drag these things around?"]
 ["pop", "r5", "s", "r5-t1" ]
 
 
@@ -105,6 +106,9 @@
 
 ["rem", "Miscellaneous stuff"]
 ["build", "key", "r3-t3", "r3-t2", true]
+["build", "autoclose", "r1-t2", 5]
+["build", "autoclose", "r2-t4", 5]
+["build", "cantgetmsg", "r2-t9", "You could probably pick up the bin, but it seems to be performing a useful function here."]
 
 ["door", "r1-t2", "r2-t4", false]
 ["door", "r1-t3", "r6-t1", false]

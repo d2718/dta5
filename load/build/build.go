@@ -17,7 +17,9 @@ func log(lvl dtalog.LogLvl, fmtstr string, args ...interface{}) {
 type Func func([]interface{}) error
 
 var Funx = map[string]Func {
-  "key": MakeKeyAndLocker,
+  "key":        MakeKeyAndLocker,
+  "autoclose":  MakeAutoClosing,
+  "cantgetmsg": AddCannotGetMessage,
 }
 
 func Build(data []interface{}) error {
@@ -47,5 +49,34 @@ func MakeKeyAndLocker(data []interface{}) error {
   scripts.Bind(lock, "open", "locked_script")
   scripts.Bind(lock, "lock", "lock_unlock_script")
   scripts.Bind(lock, "unlock", "lock_unlock_script")
+  return nil
+}
+
+// MakeAutoClosing()
+//
+// ["key_ref", delay_secs]
+//
+func MakeAutoClosing(data []interface{}) error {
+  keyRef := data[0].(string)
+  delay  := data[1].(float64)
+  
+  cont := ref.Deref(keyRef)
+  cont.SetData("auto_close_script_delay", delay)
+  scripts.Bind(cont, "open", "auto_close_script")
+  return nil
+}
+
+// AddCannotGetMessage()
+//
+// ["key_ref", "message"]
+
+func AddCannotGetMessage(data []interface{}) error {
+  keyRef := data[0].(string)
+  mesg   := data[1].(string)
+  
+  obj := ref.Deref(keyRef)
+  obj.SetData("cannot_get_message_script_message", mesg)
+  scripts.Bind(obj, "get", "cannot_get_message_script")
+  scripts.Bind(obj, "take", "cannot_get_message_script")
   return nil
 }
