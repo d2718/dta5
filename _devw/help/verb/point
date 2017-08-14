@@ -1,0 +1,14 @@
+
+POINT supports the following seven syntaxes:
+
+> POINT
+> POINT <direction>
+> POINT WTIH <my thing>
+> POINT <thing>
+> POINT <direction> WITH <my thing>
+> POINT IN|ON|BEHIND|UNDER <thing>
+> POINT <thing> with <my thing>
+
+Each of these syntaxes should cause you to point (or point <my thing>) in the desired fashion.
+
+See also WAVE, which functions identically.

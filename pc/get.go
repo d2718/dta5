@@ -8,8 +8,8 @@ package pc
 
 import(
         "dta5/log";
-        "dta5/msg"; "dta5/name"; "dta5/ref"; "dta5/room"; "dta5/thing";
-        "dta5/util";
+        "dta5/msg"; "dta5/name"; "dta5/ref"; "dta5/room"; "dta5/scripts";
+        "dta5/thing"; "dta5/util";
 )
 
 func DoGet(pp *PlayerChar, verb string,
@@ -153,4 +153,29 @@ func DoPut(pp *PlayerChar, verb string,
     rm.Deliver(put_msg)
     return
   }
+}
+
+func CannotGetMessageScript(obj, subj, dobj, iobj thing.Thing,
+                            verb, prep, text string) bool {
+  
+  if obj != dobj { return true }
+  
+  var no_get_msg string
+  var ok bool
+  if dat := obj.Data("cannot_get_message_script_message"); dat == nil {
+    scripts.Log("CannotGetMessageScript(%q): obj.Data(\"cannot_get_message_script_message\") is nil", obj.Ref())
+    return true
+  } else {
+    if no_get_msg, ok = dat.(string); !ok {
+      scripts.Log("CannotGetMessageScript(%q): obj.Data(\"cannot_get_message_script_message\") is of wrong type (%T)", obj.Ref(), dat)
+      return true
+    }
+  }
+  
+  subj.Deliver(msg.New(no_get_msg))
+  return false
+}
+
+func init() {
+  scripts.Scripts["cannot_get_message_script"] = CannotGetMessageScript
 }

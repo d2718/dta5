@@ -2,7 +2,7 @@
 //
 // the dta5 player character command parser
 //
-// updated 2017-08-13
+// updated 2017-08-14
 //
 package pc
 
@@ -13,6 +13,10 @@ import( "strings";
 var parseVerbs []string = []string{
   "close", "drop", "exits", "get", "go", "help", "inventory", "look", "lock",
   "open", "put", "remove", "say", "swap", "take", "unlock", "wear",
+  
+  // point/wave (pc/point.go)
+  
+  "point", "wave",
   
   // directional emote verbs (pc/emote.go)
   "blink", "chuckle", "gaze", "frown", "glance", "grin", "lean",
@@ -26,7 +30,7 @@ var parsePreps map[string]byte = map[string]byte {
   "on": thing.ON,
   "under": thing.UNDER,
   "with": 127,
-  "at": 126,
+  //"at": 126,
 }
 
 var ordinals map[string]int = map[string]int {
@@ -57,6 +61,11 @@ var parseDispatch map[string]ParseFunc = map[string]ParseFunc {
   "take":       ParseLikeLook,
   "unlock":     ParseLikeLock,
   "wear":       ParseLikePut,
+  
+  // point/wave
+  
+  "point":      ParseLikePoint,
+  "wave":       ParseLikePoint,
   
   // directional emote verbs
   
@@ -97,6 +106,11 @@ var doDispatch map[string]DoFunc = map[string]DoFunc {
   "take":       DoGet,
   "unlock":     DoLock, // this is correct
   "wear":       DoWear,
+  
+  // point/wave
+  
+  "point":      DoPoint,
+  "wave":       DoPoint,
   
   // directional emote verbs
 
@@ -624,4 +638,63 @@ func ParseGo(subj *PlayerChar, verb string, toks []string, text string) {
   }
   
   ParseLikeLook(subj, verb, toks, text)
+}
+
+func ParseLikePoint(subj *PlayerChar, verb string, toks []string, text string) {
+  var prep string
+  var prep_idx int = -1
+  var dobj_toks []string
+  var iobj_toks []string
+  var dobj, iobj thing.Thing = nil, nil
+  
+  var ok bool
+  for n, w := range toks {
+    _, ok = parsePreps[w]
+    if ok {
+       prep = w
+       prep_idx = n
+       break
+    }
+  }
+  
+  if prep_idx > -1 {
+    dobj_toks = toks[:prep_idx]
+    iobj_toks = toks[prep_idx+1:]
+  } else {
+    dobj_toks = toks
+  }
+  
+  if len(iobj_toks) > 0 {
+    iobj = subj.FindLikePut(iobj_toks)
+    if iobj == nil {
+      subj.QWrite("You cannot see any %q here.",
+                  strings.Join(iobj_toks, " "))
+      return
+    }
+  }
+  
+  if len(dobj_toks) == 1 {
+    if dir_num, ok := cardDirs[dobj_toks[0]]; ok {
+      DoPointDir(subj, verb, dir_num, iobj)
+      return
+    }
+    
+    if dir_num, ok := emoteDirs[dobj_toks[0]]; ok {
+      DoPointDir(subj, verb, dir_num, iobj)
+      return
+    }
+  }
+  
+  if len(dobj_toks) > 0 {
+    dobj = subj.FindLikeLook(dobj_toks)
+    if dobj == nil {
+      subj.QWrite("You cannot see any %q here.",
+                  strings.Join(dobj_toks, " "))
+      return
+    }
+  }
+
+  if scripts.Check(subj, dobj, iobj, verb, prep, text) {
+    doDispatch[verb](subj, verb, dobj, prep, iobj, text)
+  }
 }

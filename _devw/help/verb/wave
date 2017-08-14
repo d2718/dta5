@@ -1,0 +1,14 @@
+
+WAVE supports the following seven syntaxes:
+
+> WAVE
+> WAVE <direction>
+> WAVE WTIH <my thing>
+> WAVE <thing>
+> WAVE <direction> WITH <my thing>
+> WAVE IN|ON|BEHIND|UNDER <thing>
+> WAVE <thing> with <my thing>
+
+Each of these syntaxes should cause you to wave (or wave <my thing>) in the desired fashion.
+
+See also POINT, which functions identically.

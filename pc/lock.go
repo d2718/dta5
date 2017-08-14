@@ -2,12 +2,12 @@
 //
 // dta5 PlayerChar locking and unlocking things.
 //
-// updated 2017-08-08
+// updated 2017-08-14
 //
 package pc
 
 import(
-        "dta5/log"; "dta5/msg"; "dta5/name"; "dta5/room"; "dta5/scripts";
+        "dta5/msg"; "dta5/name"; "dta5/room"; "dta5/scripts";
         "dta5/thing"; "dta5/util";
 )
 
@@ -46,17 +46,20 @@ func DoLock(pp *PlayerChar, verb string,
 
 func LockedScript(obj, subj, dobj, iobj thing.Thing,
                   verb, prep, text string) bool {
-  if obj != dobj {
-    return true
-  }
+  if obj != dobj { return true }
   
   if dat := dobj.Data("locked_script_unlocked"); dat != nil {
-    switch t_dat := dat.(type) {
-    case bool:
-      if t_dat {
+    if t_dat, ok := dat.(bool); ok {
+      if t_dat == true {
         return true
       }
+    } else {
+      scripts.Log("LockedScript(%q, %q, ... %q): obj.Data() is of wrong type (%T)",
+                  obj.Ref(), verb, text, dat)
     }
+  } else {
+    scripts.Log("LockedScript(%q, %q, ... %q): obj.Data() is nil",
+                obj.Ref(), verb, text)
   }
   
   m := msg.New("%s appears to be locked.", util.Cap(dobj.Normal(name.DEF_ART)))
@@ -66,20 +69,16 @@ func LockedScript(obj, subj, dobj, iobj thing.Thing,
 
 func LockUnlockScript(obj, subj, dobj, iobj thing.Thing,
                       verb, prep, text string) bool {
-  if obj != dobj {
-    return true
-  }
-  if iobj == nil {
-    return true
-  }
+                        
+  if obj != dobj { return true }
+  if iobj == nil { return true }
   
-  pp, ok := subj.(*PlayerChar)
-  if !ok {
-    return true
-  }
-  if !pp.InHand(iobj) {
-    return true
-  }
+  var pp *PlayerChar
+  var ok bool
+  
+  if pp, ok = subj.(*PlayerChar); !ok { return true }
+  
+  if !pp.InHand(iobj) { return true }
   
   if dat := dobj.Data("lock_unlock_script_key"); dat != nil {
     switch t_dat := dat.(type) {
@@ -126,25 +125,24 @@ func LockUnlockScript(obj, subj, dobj, iobj thing.Thing,
               }
             }
           default:
-              log(dtalog.ERR, "LockUnlockScript(): bad locked_script_unlocked data for %q", dobj.Ref())
-              pp.QWrite("ERROR: There was a problem with %s; you should let someone know.",
-                        dobj.Full(name.DEF_ART))
+            scripts.Log("LockUnlockScript(%q): obj.Data(\"locked_script_unlocked\") is wrong type (%T)", obj.Ref(), dat)
+            return true
           }
         } else {
-              log(dtalog.ERR, "LockUnlockScript(): no locked_script_unlocked data for %q", dobj.Ref())
-              pp.QWrite("ERROR: There was a problem with %s; you should let someone know.",
-                        dobj.Full(name.DEF_ART))
+          scripts.Log("LockUnlockScript(%q): obj.Data(\"locked_script_unlocked\") is nil)", obj.Ref(), dat)
+          return true
         }
         return false
       } else {
         return true
       }
     default:
-      log(dtalog.ERR, "LockUnlockScript(): bad lock_unlock_script_key data for %s", dobj.Ref())
-      pp.QWrite("ERROR: There was a problem with %s; you should let someone know.",
-                dobj.Full(name.DEF_ART))
+      scripts.Log("LockUnlockScript(%q): obj.Data(\"lock_unlock_script_key\") is wrong type (%T)", obj.Ref(), dat)
     }
+  } else {
+    scripts.Log("LockUnlockScript(%q): obj.Data() is nil", obj.Ref())
   }
+  
   return true
 }
 

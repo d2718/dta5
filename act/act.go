@@ -98,6 +98,17 @@ func Enqueue(ap *Action) {
   pushChan <- ap
 }
 
+func Add(delay float64, f func() error) {
+  log(dtalog.DBG, "Add(%f, []) called", delay)
+  dly := delay * 1000000000
+  a := Action{
+    Time: time.Now().Add(time.Duration(dly)),
+    Act: f,
+  }
+  Enqueue(&a)
+}
+    
+
 func Next() *Action {
   select {
   case ap := <- popChan:
