@@ -25,16 +25,27 @@ var Scripts = make(map[string]Script)
 //
 // defined in pc/get.go
 //
-// "cannot_get_message_script"
+//   * "CGMS" ("Cannot Get Messsage Script")
+//     Provides custom messaging informing a player why a thing.Thing can't
+//     be picked up.
 //
 // defined in pc/lock.go
 //
-// "locked_script"
-// "lock_unlock_script"
+//   * "locked_script"
+//     Prevents a player from opening a thing.Openable and informs him that
+//     it's locked, unless the associated data value "locked_script_unlocked"
+//     is set to true.
+//
+//   * "lock_unlock_script"
+//     Designates a thing.Thing to be a "key" that allows a thing.Openable
+//     under the influence of the "locked_script" to be UNLOCKed by it.
 //
 // defined in pc/open.go
 //
-// "auto_close_script"
+//   * "auto_close_script"
+//     Causes a thing.Openable to shut automatically after it has been opened
+//    (after a specified delay).
+//
 
 var Bindings = make(map[string]map[string]string)
 

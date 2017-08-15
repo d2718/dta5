@@ -2,7 +2,7 @@
 //
 // dta5 PlayerChar wear/remove verbs
 //
-// updated 2017-08-11
+// updated 2017-08-15
 //
 package pc
 
@@ -58,7 +58,13 @@ func DoWear(pp *PlayerChar, verb string, dobj thing.Thing,
                                       "verb": "puts",
                                       "pp":   pp.PossPronoun(),
                                       "dobj": f1p["dobj"], }
-      templ := fmt.Sprintf("{subj} {verb} {dobj} %s.", bod.WornSlotName(slot))
+      var templ string
+      slotName := bod.WornSlotName(slot)
+      if slotName == "" {
+        templ = "{subj} {verb} {dobj}."
+      } else {
+        templ = fmt.Sprintf("{subj} {verb} {dobj} %s.", slotName)
+      }
       
       m := msg.New(gstring.Sprintm(templ, f3p))
       m.Add(pp, gstring.Sprintm(templ, f1p))

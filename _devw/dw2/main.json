@@ -41,7 +41,7 @@
 
 ["rem", "r3 West Shelter"]
 ["itemc",   "r3-t1", "a black plastic garbage bag", "", false, 0.1, 1, false, true,
-          { "i": [30, 55] } ]
+          { "i": [30, 55], "u": ["x", 100] } ]
 ["itemc",   "r3-t2", "a metal first-aid chest", "", false, "x", "x", true, false,
           { "i": [1000, 1000], "b": ["x", 200] } ]
 ["item",    "r3-t2-t1", "some clean white gauze", "", false, 0.05, 0.2 ]
@@ -50,10 +50,12 @@
 ["item",    "r3-t3", "a small metal key", "", false, 0.01, 0.005 ]
 ["itemc",   "r3-t4", "some rough wooden picnic tables", "", true, "x", "x", false, false,
           { "o": [1000, 3000], "u": ["x", 3000] } ]
+["itemc",   "r3-t5", "a tattered cardboard box", "", false, 0.5, 200, false, true,
+          { "i": [20, 200], "b": ["x", 100], "u": ["x", 200] } ]
 
 ["pop", "r3-t2", "i", "r3-t2-t1", "r3-t2-t2", "r3-t2-t3" ]
 ["pop", "r3", "s", "r3-t4" ]
-["pop", "r3", "c", "r3-t1", "r3-t2", "r3-t3" ]
+["pop", "r3", "c", "r3-t1", "r3-t2", "r3-t3", "r3-t5" ]
 
 
 ["rem", "r4 Branbury Beach Green, West"]
@@ -98,10 +100,13 @@
 ["rem", "r9 Branbury State Park, Parking Lot"]
 
 ["rem", "r10", "Underground Chamber"]
-["dwy",  "r10-t1", "an/a iron-rimmed hole", "in the ceiling of the chamber", false, "x", "x", true ]
-["item", "r10-t2", "some rusty iron gratings", "", true, "x", "x" ]
+["dwy",   "r10-t1", "an/a iron-rimmed hole", "in the ceiling of the chamber", false, "x", "x", true ]
+["item",  "r10-t2", "some rusty iron gratings", "", true, "x", "x" ]
+["cloth", "r10-t3", "an/a iron band", "with a wavy pattern engraved on it", false,
+          0.010, 0.010, "misc"]
 
 ["pop", "r10", "s", "r10-t1", "r10-t2" ]
+["pop", "r10", "c", "r10-t3" ]
 
 
 ["rem", "Miscellaneous stuff"]

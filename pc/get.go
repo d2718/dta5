@@ -42,6 +42,8 @@ func DoGet(pp *PlayerChar, verb string,
     return
   }
   
+  var revealed = make([]string, 0, 0)
+  
   if iobj == nil {
     loc := dobj.Loc()
     r := loc.Place.(*room.Room)
@@ -51,20 +53,60 @@ func DoGet(pp *PlayerChar, verb string,
       r.Contents.Remove(dobj)
     }
     
+    if cont, ok := dobj.(thing.Container); ok {
+      for _, s := range []byte{thing.BEHIND, thing.UNDER} {
+        tlo := cont.Side(s)
+        if tlo != nil {
+          temp_t := make([]thing.Thing, 0, len(tlo.Things))
+          temp_t = append(temp_t, tlo.Things...)
+          for _, t := range temp_t {
+            tlo.Remove(t)
+            r.Contents.Add(t)
+            revealed = append(revealed, t.Normal(0))
+          }
+        }
+      }
+    }
+    
     mesg := msg.New("%s picks up %s.", util.Cap(pp.Normal(0)), dobj.Normal(0))
     mesg.Add(pp, "You pick up %s.", dobj.Normal(0))
-    
     r.Deliver(mesg)
+    
+    if len(revealed) > 0 {
+      mesg = msg.New("Picking up %s reveals %s.", dobj.Short(name.DEF_ART),
+                      util.EnglishList(revealed))
+      r.Deliver(mesg)
+    }
+    
   } else {
     cont := iobj.(thing.Container)
     tl := cont.Side(parsePreps[prep])
     tl.Remove(dobj)
     
+    if cont, ok := dobj.(thing.Container); ok {
+      for _, s := range []byte{thing.BEHIND, thing.UNDER} {
+        tlo := cont.Side(s)
+        if tlo != nil {
+          temp_t := make([]thing.Thing, 0, len(tlo.Things))
+          temp_t = append(temp_t, tlo.Things...)
+          for _, t := range temp_t {
+            tlo.Remove(t)
+            tl.Add(t)
+            revealed = append(revealed, t.Normal(0))
+          }
+        }
+      }
+    }
+    
     mesg := msg.New("%s gets a %s from %s %s.", util.Cap(pp.Normal(0)),
                     dobj.Normal(0), prep, iobj.Normal(0))
     mesg.Add(pp, "You get a %s from %s %s.", dobj.Normal(0), prep, iobj.Normal(0))
-    
     pp.where.Place.(*room.Room).Deliver(mesg)
+    
+    if len(revealed) > 0 {
+      pp.QWrite("Getting %s reveals %s.", dobj.Short(name.DEF_ART),
+                util.EnglishList(revealed))
+    }
   }
   
   if rh, _ := bod.HeldIn("right_hand"); rh == nil {
@@ -120,6 +162,13 @@ func DoPut(pp *PlayerChar, verb string,
         return
       }
       
+      if bod.IsHolding(iobj) {
+        if (prep == "behind") || (prep == "under") {
+          pp.QWrite("You'll have to put %s down first.", iobj.Normal(name.DEF_ART))
+          return
+        }
+      }
+      
       if rh, _ := bod.HeldIn("right_hand"); dobj == rh {
         bod.SetHeld("right_hand", nil)
       } else {
@@ -162,12 +211,12 @@ func CannotGetMessageScript(obj, subj, dobj, iobj thing.Thing,
   
   var no_get_msg string
   var ok bool
-  if dat := obj.Data("cannot_get_message_script_message"); dat == nil {
-    scripts.Log("CannotGetMessageScript(%q): obj.Data(\"cannot_get_message_script_message\") is nil", obj.Ref())
+  if dat := obj.Data("CGMS_msg"); dat == nil {
+    scripts.Log("CannotGetMessageScript(%q): obj.Data(\"CGMS_msg\") is nil", obj.Ref())
     return true
   } else {
     if no_get_msg, ok = dat.(string); !ok {
-      scripts.Log("CannotGetMessageScript(%q): obj.Data(\"cannot_get_message_script_message\") is of wrong type (%T)", obj.Ref(), dat)
+      scripts.Log("CannotGetMessageScript(%q): obj.Data(\"CGMS_msg\") is of wrong type (%T)", obj.Ref(), dat)
       return true
     }
   }
@@ -177,5 +226,5 @@ func CannotGetMessageScript(obj, subj, dobj, iobj thing.Thing,
 }
 
 func init() {
-  scripts.Scripts["cannot_get_message_script"] = CannotGetMessageScript
+  scripts.Scripts["CGMS"] = CannotGetMessageScript
 }
