@@ -11,8 +11,9 @@ import( "strings";
 )
 
 var parseVerbs []string = []string{
-  "close", "drop", "exits", "get", "go", "help", "inventory", "look", "lock",
-  "open", "put", "remove", "say", "swap", "take", "unlock", "wear",
+  "close", "drop", "examine", "exits", "get", "go", "help", "inventory", 
+  "look", "lock", "open", "put", "remove", "say", "swap", "take",
+  "unlock", "wear",
   
   // point/wave (pc/point.go)
   
@@ -46,6 +47,7 @@ type DoFunc func(*PlayerChar, string, thing.Thing, string, thing.Thing, string)
 var parseDispatch map[string]ParseFunc = map[string]ParseFunc {
   "close":      ParseLikeLook,
   "drop":       ParseLikePut,
+  "examine":    ParseLikePut,
   "exits":      ParseIntransitive,
   "get":        ParseLikeLook,
   "go":         ParseGo,
@@ -91,6 +93,7 @@ var parseDispatch map[string]ParseFunc = map[string]ParseFunc {
 var doDispatch map[string]DoFunc = map[string]DoFunc {
   "close":      DoClose,
   "drop":       DoPut,
+  "examine":    DoExamine,
   "exits":      DoExits,
   "get":        DoGet,
   "go":         DoMove,

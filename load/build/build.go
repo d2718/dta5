@@ -75,8 +75,8 @@ func AddCannotGetMessage(data []interface{}) error {
   mesg   := data[1].(string)
   
   obj := ref.Deref(keyRef)
-  obj.SetData("cannot_get_message_script_message", mesg)
-  scripts.Bind(obj, "get", "cannot_get_message_script")
-  scripts.Bind(obj, "take", "cannot_get_message_script")
+  obj.SetData("CGMS_msg", mesg)
+  scripts.Bind(obj, "get", "CGMS")
+  scripts.Bind(obj, "take", "CGMS")
   return nil
 }

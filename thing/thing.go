@@ -15,7 +15,7 @@
 // may later get merged with ref.Interface), and has a pointer to where it
 // is (see LocVec, below).
 //
-// updated 2017-08-12
+// updated 2017-08-15
 //
 package thing
 
@@ -96,6 +96,10 @@ func sideStr(s byte) string {
   default:
     return ""
   }
+}
+
+func SideStr(s byte) string {
+  return sideStr(s)
 }
 
 func (v LocVec) String() string {
