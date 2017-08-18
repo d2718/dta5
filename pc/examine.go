@@ -25,9 +25,9 @@ func DoExamine(pp *PlayerChar, verb string, dobj thing.Thing,
     return
   }
   
-  m := msg.New("%s examines %s %s.", util.Cap(pp.Normal(0)),
+  m := msg.New("txt", "%s examines %s %s.", util.Cap(pp.Normal(0)),
                 pp.PossPronoun(), dobj.Normal(name.NO_ART))
-  m.Add(pp, "You examine your %s.", dobj.Normal(name.NO_ART))
+  m.Add(pp, "txt", "You examine your %s.", dobj.Normal(name.NO_ART))
   pp.where.Place.(*room.Room).Deliver(m)
   
   pp.QWrite("You see %s.", dobj.Full(0))

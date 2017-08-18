@@ -2,7 +2,7 @@
 //
 // dta5 PlayerChar locking and unlocking things.
 //
-// updated 2017-08-14
+// updated 2017-08-18
 //
 package pc
 
@@ -62,7 +62,7 @@ func LockedScript(obj, subj, dobj, iobj thing.Thing,
                 obj.Ref(), verb, text)
   }
   
-  m := msg.New("%s appears to be locked.", util.Cap(dobj.Normal(name.DEF_ART)))
+  m := msg.New("txt", "%s appears to be locked.", util.Cap(dobj.Normal(name.DEF_ART)))
   subj.Deliver(m)
   return false
 }
@@ -95,31 +95,31 @@ func LockUnlockScript(obj, subj, dobj, iobj thing.Thing,
               } else if verb == "lock" {
                 if t_dobj, is_openable := dobj.(thing.Openable); is_openable {
                   if t_dobj.IsOpen() {
-                    m := msg.New("%s is currently open.",
+                    m := msg.New("txt,", "%s is currently open.",
                                   util.Cap(dobj.Normal(name.DEF_ART)))
                     subj.Deliver(m)
                     return false
                   }
                 }
                 dobj.SetData("locked_script_unlocked", false)
-                m := msg.New("%s locks %s with %s %s.", util.Cap(subj.Normal(0)),
+                m := msg.New("txt", "%s locks %s with %s %s.", util.Cap(subj.Normal(0)),
                               dobj.Normal(0), subj.PossPronoun(),
                               iobj.Normal(name.NO_ART))
-                m.Add(pp, "You lock %s with your %s.", dobj.Normal(0),
+                m.Add(pp, "txt", "You lock %s with your %s.", dobj.Normal(0),
                             iobj.Normal(name.NO_ART))
                 pp.where.Place.(*room.Room).Deliver(m)
               }
             } else {
               if verb == "unlock" {
                 dobj.SetData("locked_script_unlocked", true)
-                m := msg.New("%s unlocks %s with %s %s.", util.Cap(subj.Normal(0)),
+                m := msg.New("txt", "%s unlocks %s with %s %s.", util.Cap(subj.Normal(0)),
                             dobj.Normal(0), subj.PossPronoun(),
                             iobj.Normal(name.NO_ART))
-                m.Add(pp, "You unlock %s with your %s.", dobj.Normal(0),
+                m.Add(pp, "txt", "You unlock %s with your %s.", dobj.Normal(0),
                             iobj.Normal(name.NO_ART))
                 pp.where.Place.(*room.Room).Deliver(m)
               } else {
-                m := msg.New("%s is already locked.",
+                m := msg.New("txt", "%s is already locked.",
                               util.Cap(dobj.Normal(name.DEF_ART)))
                 subj.Deliver(m)
               }

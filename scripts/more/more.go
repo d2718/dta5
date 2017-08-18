@@ -34,7 +34,7 @@ func Initialize() {
       }
     }
     
-    subj.Deliver(msg.New(mesg))
+    subj.Deliver(msg.New("txt", mesg))
     return false
   }
 }

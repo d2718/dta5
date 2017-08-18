@@ -22,14 +22,13 @@ func DoMoveDir(pp *PlayerChar, dir room.NavDir) {
   
   switch t_tgt := tgt.(type) {
   case *room.Room:
-    leave_msg := msg.New("%s goes %s.", pp.Normal(0), cardDirNames[dir])
-    leave_msg.Add(pp, "You head %s.", cardDirNames[dir])
+    leave_msg := msg.New("txt", "%s goes %s.", pp.Normal(0), cardDirNames[dir])
+    leave_msg.Add(pp, "txt", "You head %s.", cardDirNames[dir])
     loc.Deliver(leave_msg)
+    arrive_msg := msg.New("txt", "%s arrives.", pp.Normal(0))
+    t_tgt.Deliver(arrive_msg)
     loc.Contents.Remove(pp)
     t_tgt.Contents.Add(pp)
-    arrive_msg := msg.New("%s arrives.", pp.Normal(0))
-    arrive_msg.Add(pp, "")
-    t_tgt.Deliver(arrive_msg)
     DoLook(pp, "look", nil, "", nil, "")
     
   case *door.Doorway:
@@ -42,7 +41,7 @@ func DoMoveDir(pp *PlayerChar, dir room.NavDir) {
       
       switch o_cont := o_dwy.Loc().Place.(type) {
       case *room.Room:
-        ar_m = msg.New("%s arrives through %s.", sname, oname)
+        ar_m = msg.New("txt", "%s arrives through %s.", sname, oname)
         tgt_rm = o_cont
       case thing.Container:
         o_cont_t := o_cont.(thing.Thing)
@@ -52,16 +51,16 @@ func DoMoveDir(pp *PlayerChar, dir room.NavDir) {
           pp.QWrite("Some unseen force prevents you. (Really, though, this is a game error.)")
           return
         }
-        ar_m = msg.New("%s arrives through %s %s.", sname, o_dwy.Normal(0), o_dwy.Loc().String())
+        ar_m = msg.New("txt", "%s arrives through %s %s.", sname, o_dwy.Normal(0), o_dwy.Loc().String())
       default:
         log(dtalog.ERR, "DoMove(): other *door.Doorway (%q) not contained in room.Room or in thing.Container in a room.Room.", o_dwy.Ref())
         pp.QWrite("Some unseen force prevents you. (Really, though, this is a game error.)")
         return
       }
       
-      lv_m := msg.New("%s goes %s through %s.", pp.Normal(0),
+      lv_m := msg.New("txt", "%s goes %s through %s.", pp.Normal(0),
                             cardDirNames[dir], t_tgt.Normal(0))
-      lv_m.Add(pp, "You head %s through %s.", cardDirNames[dir], t_tgt.Normal(0))
+      lv_m.Add(pp, "txt", "You head %s through %s.", cardDirNames[dir], t_tgt.Normal(0))
       
       loc.Deliver(lv_m)
       tgt_rm.Deliver(ar_m)
@@ -93,9 +92,9 @@ func DoMove(pp *PlayerChar, verb string, dobj thing.Thing,
     if prep == "behind" {
       sname := util.Cap(pp.Normal(0))
       oname := iobj.Normal(0)
-      m := msg.New("%s walks behind %s.", sname, oname)
-      m.Add(pp, "You walk behind %s.", oname)
-      m.Add(iobj, "%s walks behind you.", sname)
+      m := msg.New("txt", "%s walks behind %s.", sname, oname)
+      m.Add(pp, "txt", "You walk behind %s.", oname)
+      m.Add(iobj, "txt", "%s walks behind you.", sname)
       loc.Deliver(m)
       return
     } else {
@@ -107,22 +106,22 @@ func DoMove(pp *PlayerChar, verb string, dobj thing.Thing,
       sname := util.Cap(pp.Normal(0))
       oname := dobj.Normal(0)
       if iobj == nil {
-        m := msg.New("%s walks toward %s.", sname, oname)
-        m.Add(pp, "You walk toward %s.", oname)
-        m.Add(dobj, "%s walks toward you.", sname)
+        m := msg.New("txt", "%s walks toward %s.", sname, oname)
+        m.Add(pp, "txt", "You walk toward %s.", oname)
+        m.Add(dobj, "txt", "%s walks toward you.", sname)
         loc.Deliver(m)
       } else {
         iname := iobj.Normal(0)
         var m *msg.Message
         switch prep {
         case "in", "on":
-          m = msg.New("%s walks toward %s.", sname, iname)
-          m.Add(iobj, "%s walks toward you.", sname)
+          m = msg.New("txt", "%s walks toward %s.", sname, iname)
+          m.Add(iobj, "txt", "%s walks toward you.", sname)
         case "behind", "under":
-          m = msg.New("%s walks toward something %s %s.", sname, prep, iname)
-          m.Add(iobj, "%s walks toward something %s you.", sname, prep)
+          m = msg.New("txt", "%s walks toward something %s %s.", sname, prep, iname)
+          m.Add(iobj, "txt", "%s walks toward something %s you.", sname, prep)
         }
-        m.Add(pp, "You walk toward %s %s %s.", oname, prep, iname)
+        m.Add(pp, "txt", "You walk toward %s %s %s.", oname, prep, iname)
         loc.Deliver(m)
       }
     } else {
@@ -140,7 +139,7 @@ func DoMove(pp *PlayerChar, verb string, dobj thing.Thing,
       switch o_cont := o_dwy.Loc().Place.(type) {
       case *room.Room:
         tgt_rm = o_cont
-        ar_m = msg.New("%s arrives through %s.", sname, o_dwy.Normal(0))
+        ar_m = msg.New("txt", "%s arrives through %s.", sname, o_dwy.Normal(0))
       case thing.Container:
         o_cont_t := o_cont.(thing.Thing)
         var no_err bool
@@ -157,12 +156,12 @@ func DoMove(pp *PlayerChar, verb string, dobj thing.Thing,
       }
       
       if iobj == nil {
-        lv_m = msg.New("%s goes through %s.", sname, oname)
-        lv_m.Add(pp, "You go through %s", oname)
+        lv_m = msg.New("txt", "%s goes through %s.", sname, oname)
+        lv_m.Add(pp, "txt", "You go through %s", oname)
       } else {
         prep_loc := dobj.Loc().String()
-        lv_m = msg.New("%s goes through %s %s.", sname, oname, prep_loc)
-        lv_m.Add(pp, "You go through %s %s.", oname, prep_loc)
+        lv_m = msg.New("txt", "%s goes through %s %s.", sname, oname, prep_loc)
+        lv_m.Add(pp, "txt", "You go through %s %s.", oname, prep_loc)
       }
       
       loc.Deliver(lv_m)

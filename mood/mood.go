@@ -63,7 +63,7 @@ func (mmp *MoodMessenger) Arm() {
 }
 
 func (mmp *MoodMessenger) Message() {
-  m := msg.New(mmp.Messages[randSource.Intn(len(mmp.Messages))])
+  m := msg.New("txt", mmp.Messages[randSource.Intn(len(mmp.Messages))])
   for _, r_id := range mmp.Coverage {
     ref.Deref(r_id).(*room.Room).Deliver(m)
   }

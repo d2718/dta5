@@ -14,8 +14,8 @@ import( "bufio"; "fmt"; "flag"; "net"; "os"; "path/filepath"; "strings";
         "github.com/d2718/dconfig";
         "dta5/log";
         "dta5/act"; "dta5/desc"; "dta5/door"; "dta5/load"; "dta5/mood";
-        "dta5/pc"; "dta5/ref"; "dta5/room"; "dta5/scripts"; "dta5/scripts/more";
-        "dta5/save";
+        "dta5/msg"; "dta5/pc"; "dta5/ref"; "dta5/room"; "dta5/scripts";
+        "dta5/scripts/more"; "dta5/save";
 )
 
 const mainWorldFile = "main.json"
@@ -98,16 +98,16 @@ func processCommand(cmd string) {
   
   switch verb {
   case "wall":
-    pc.Wall(pc.PM{Type: "sys", Payload: rest})
+    pc.Wall(msg.Env{Type: "sys", Text: rest})
     
   case "save":
     if rest == "" {
       log(dtalog.MSG, "processCommand(): you must specify an identifier to save.")
       return
     }
-    m := pc.PM{
+    m := msg.Env{
       Type: "sys",
-      Payload: "You are being logged out so that the state of the game may be saved.",
+      Text: "You are being logged out so that the state of the game may be saved.",
     }
     pc.Wall(m)
     for _, pp := range pc.PlayerChars {
@@ -144,9 +144,9 @@ func processCommand(cmd string) {
       log(dtalog.MSG, "processCommand(): you must specify and identifier to load.")
       return
     }
-    m := pc.PM{
+    m := msg.Env{
       Type: "sys",
-      Payload: "You are being logged out so that the state of the game may be loaded.",
+      Text: "You are being logged out so that the state of the game may be loaded.",
     }
     pc.Wall(m)
     for _, pp := range pc.PlayerChars {
@@ -172,9 +172,9 @@ func processCommand(cmd string) {
     log(dtalog.DBG, "processCommand(): load complete")
     
   case "quit":
-    m := pc.PM{
+    m := msg.Env{
       Type:"sys",
-      Payload: "The game is being shut down RIGHT NOW.",
+      Text: "The game is being shut down RIGHT NOW.",
     }
     pc.Wall(m)
     for _, pp := range pc.PlayerChars {

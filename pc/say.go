@@ -87,8 +87,8 @@ func DoSay(pp *PlayerChar, verb string, dobj thing.Thing,
       f1p["verb"], f3p["verb"] = "say", "says"
       f1p["punct"], f3p["punct"] = ".", "."
     }
-    m = msg.New(gstring.Sprintm(sayTemplate, f3p))
-    m.Add(pp, gstring.Sprintm(sayTemplate, f1p))
+    m = msg.New("speech", gstring.Sprintm(sayTemplate, f3p))
+    m.Add(pp, "speech", gstring.Sprintm(sayTemplate, f1p))
   } else if obj == pp {
     switch punct_char {
     case '.':
@@ -103,8 +103,8 @@ func DoSay(pp *PlayerChar, verb string, dobj thing.Thing,
       f1p["punct"], f3p["punct"] = ".", "."
     }
     f1p["targ"], f3p["targ"] = "yourself", pp.ReflexPronoun()
-    m = msg.New(gstring.Sprintm(sayToTemplate, f3p))
-    m.Add(pp, gstring.Sprintm(sayToTemplate, f1p))
+    m = msg.New("speech", gstring.Sprintm(sayToTemplate, f3p))
+    m.Add(pp, "speech", gstring.Sprintm(sayToTemplate, f1p))
   } else {
     var f2p = map[string]interface{} {
       "subj":  f3p["subj"],
@@ -128,9 +128,9 @@ func DoSay(pp *PlayerChar, verb string, dobj thing.Thing,
       f1p["punct"], f2p["punct"], f3p["punct"] = ".", ".", "."
     }
 
-    m = msg.New(gstring.Sprintm(sayToTemplate, f3p))
-    m.Add(pp, gstring.Sprintm(sayToTemplate, f1p))
-    m.Add(obj, gstring.Sprintm(sayToTemplate, f2p))
+    m = msg.New("speech", gstring.Sprintm(sayToTemplate, f3p))
+    m.Add(pp, "speech", gstring.Sprintm(sayToTemplate, f1p))
+    m.Add(obj, "speech", gstring.Sprintm(sayToTemplate, f2p))
   }
   
   pp.where.Place.(*room.Room).Deliver(m)

@@ -7,6 +7,7 @@
 package pc
 
 import( "strings";
+        "dta5/msg";
         "dta5/name"; "dta5/room"; "dta5/scripts"; "dta5/thing"; "dta5/util";
 )
 
@@ -189,7 +190,7 @@ func matchVerb(token string) string {
 
 func (pp *PlayerChar) Parse(cmd string) error {
   
-  pp.Send(PM{Type: "echo", Payload: cmd})
+  pp.Send(msg.Env{Type: "echo", Text: cmd})
   
   if len(cmd) == 0 {
     pp.QWrite("Sorry, what?")
