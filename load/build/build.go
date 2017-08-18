@@ -2,7 +2,7 @@
 //
 // extra dta5 world-building shortcuts
 //
-// updated 2017-08-08
+// updated 2017-08-18
 //
 package build
 
@@ -19,7 +19,7 @@ type Func func([]interface{}) error
 var Funx = map[string]Func {
   "key":        MakeKeyAndLocker,
   "autoclose":  MakeAutoClosing,
-  "cantgetmsg": AddCannotGetMessage,
+  "cvmd":       AddCannotDirectMessage,
 }
 
 func Build(data []interface{}) error {
@@ -66,17 +66,18 @@ func MakeAutoClosing(data []interface{}) error {
   return nil
 }
 
-// AddCannotGetMessage()
+// AddCannotDirectMessage()
 //
-// ["key_ref", "message"]
+// ["key_ref", "verb", "message"]
 
-func AddCannotGetMessage(data []interface{}) error {
-  keyRef := data[0].(string)
-  mesg   := data[1].(string)
+func AddCannotDirectMessage(data []interface{}) error {
+  key_ref := data[0].(string)
+  verb    := data[1].(string)
+  mesg    := data[2].(string)
   
-  obj := ref.Deref(keyRef)
-  obj.SetData("CGMS_msg", mesg)
-  scripts.Bind(obj, "get", "CGMS")
-  scripts.Bind(obj, "take", "CGMS")
+  dat_str := "CVMD_" + verb
+  obj     := ref.Deref(key_ref)
+  obj.SetData(dat_str, mesg)
+  scripts.Bind(obj, verb, "CVMD")
   return nil
 }

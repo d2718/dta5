@@ -19,6 +19,7 @@ type verbConj struct {
 var emoteVerbFilter = map[string]verbConj {
   "nod":    verbConj{ "nod your head", "nods his head" },
   "raise":  verbConj{ "raise your eyebrows", "raises {subj_pp} eyebrows" },
+  "shake":  verbConj{ "shake your head", "shakes {subj_pp} head" },
   "snap":   verbConj{ "snap your fingers", "snaps his fingers" },
 }
 
@@ -47,6 +48,7 @@ var dirTemplates = map[string]string {
   "chuckle":  dirGlanceTemplate,
   "frown":    dirGlanceTemplate,
   "raise":    dirGlanceTemplate,
+  "shake":    dirGlanceTemplate,
   "shrug":    dirGlanceTemplate,
   "sigh":     dirGlanceTemplate,
   "snap":     dirGlanceTemplate,

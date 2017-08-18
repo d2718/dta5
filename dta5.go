@@ -14,7 +14,7 @@ import( "bufio"; "fmt"; "flag"; "net"; "os"; "path/filepath"; "strings";
         "github.com/d2718/dconfig";
         "dta5/log";
         "dta5/act"; "dta5/desc"; "dta5/door"; "dta5/load"; "dta5/mood";
-        "dta5/pc"; "dta5/ref"; "dta5/room"; "dta5/scripts";
+        "dta5/pc"; "dta5/ref"; "dta5/room"; "dta5/scripts"; "dta5/scripts/more";
         "dta5/save";
 )
 
@@ -201,6 +201,7 @@ func main() {
   Configure(filepath.Join(worldDir, "conf"))
   pc.PlayerDir = filepath.Join(worldDir, "pc_dir")
   
+  more.Initialize()
   mood.Initialize()
   load.LoadFile(filepath.Join(worldDir, mainWorldFile), load.INIT)
   desc.Initialize(filepath.Join(worldDir, descPath))

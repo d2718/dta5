@@ -1,0 +1,127 @@
+["rem",
+  "Branbury State Park area",
+  "r0-r100"]
+
+[ "room", "r1", "East Shelter", "r1-t2", "", "", "", "r1-t3" ]
+[ "room", "r2", "Branbury Beach Green, East", "", "", "r5", "", "r2-t4", "", "r4" ]
+[ "room", "r3", "West Shelter", "r4", "", "", "", "r6" ]
+[ "room", "r4", "Branbury Beach Green, West", "", "", "r2", "", "r3", "", "r8" ]
+[ "room", "r5", "Branbury Beach, Picnic Area", "", "", "", "", "r7", "", "r2" ]
+[ "room", "r6", "Branbury State Park, South of Facility", "", "r6-t1", "r7", "", "r9", "", "", "r3" ]
+[ "room", "r7", "Branbury State Park, Playground", "r5", "", "", "", "", "r9", "r6" ]
+[ "room", "r8", "Branbury State Park, Boat Launch", "", "", "r4", "", "r9" ]
+[ "room", "r9", "Branbury State Park, Parking Lot", "r6", "r7", "", "", "", "", "", "r8" ]
+[ "room", "r10", "Underground Chamber", "", "", "", "", "r10-t2", "", "" , "", "r10-t1" ]
+
+
+["rem", "r1 East Shelter"]
+["itemc",   "r1-t1", "some rough wooden picnic tables", "", true, "x", "x", false, false,
+          { "o": [1000, 3000], "u": ["x", 3000] } ]
+["dwy",     "r1-t2", "the northern flapping screen door", "", false, "x", "x", true ]
+["dwy",     "r1-t3", "the southern flapping screen door", "", false, "x", "x", true ]
+["item",    "r1-t4", "an/a antique brass key", "", false, 0.1, 0.05]
+
+["pop", "r1", "s", "r1-t1", "r1-t2", "r1-t3" ]
+["pop", "r1-t1", "u", "r1-t4"]
+
+
+["rem", "r2 Branbury Beach Green, East"]
+["cloth",   "r2-t1", "a blue baseball cap", "", false, 0.2, 0.3, "head" ]
+["itemc",   "r2-t2", "a green plastic bucket", "with cartoonish ducks on it", false, 0.2, 2.0, false, true,
+          { "i": [5, 2]} ]
+["item",    "r2-t3", "a tattered tan towel", "", false, 0.25, 1]
+["dwy",     "r2-t4", "a flapping screen door", "", false, "x", "x", true ]
+["cloth",   "r2-t5", "some grey athletic shorts", "", false, 0.2, 1, "pants" ]
+["cloth",   "r2-t6", "some brightly-colored swimming trunks", "", false, 0.2, 1, "pants" ]
+["cloth",   "r2-t7", "some blue-tinted swim goggles", "", false, 0.05, 0.2, "face" ]
+["cloth",   "r2-t8", "a faded blue hoodie", "with \"UNC\" in large letters on the front",
+            false, 0.5, 0.75, "shirt" ]
+["itemc",   "r2-t9", "a battered plastic lost-and-found bin", "", false, 1.5, 300,
+          false, true, { "i": [100, 300], "b": [50, "x"] } ]
+
+["pop", "r2-t9", "i", "r2-t1", "r2-t2", "r2-t3", "r2-t5", "r2-t6", "r2-t7",
+        "r2-t8" ]
+["pop", "r2", "c", "r2-t9" ]
+["pop", "r2", "s", "r2-t4" ]
+
+
+["rem", "r3 West Shelter"]
+["itemc",   "r3-t1", "a black plastic garbage bag", "", false, 0.1, 1, false, true,
+          { "i": [30, 55], "u": ["x", 100] } ]
+["itemc",   "r3-t2", "a metal first-aid chest", "", false, "x", "x", true, false,
+          { "i": [1000, 1000], "b": ["x", 200] } ]
+["item",    "r3-t2-t1", "some clean white gauze", "", false, 0.05, 0.2 ]
+["item",    "r3-t2-t2", "a plastic tube", "of antiseptic", false, 0.1, 0.05 ]
+["item",    "r3-t2-t3", "an/a orange and white defibrilator", "", false, 20, 5 ]
+["item",    "r3-t3", "a small metal key", "", false, 0.01, 0.005 ]
+["itemc",   "r3-t4", "some rough wooden picnic tables", "", true, "x", "x", false, false,
+          { "o": [1000, 3000], "u": ["x", 3000] } ]
+["itemc",   "r3-t5", "a tattered cardboard box", "", false, 0.5, 200, false, true,
+          { "i": [20, 200], "b": ["x", 100], "u": ["x", 200] } ]
+
+["pop", "r3-t2", "i", "r3-t2-t1", "r3-t2-t2", "r3-t2-t3" ]
+["pop", "r3", "s", "r3-t4" ]
+["pop", "r3", "c", "r3-t1", "r3-t2", "r3-t3", "r3-t5" ]
+
+
+["rem", "r4 Branbury Beach Green, West"]
+["itemc",   "r4-t1", "a battered metal lunch box", "", false, 0.5, 1.5, true, false,
+          { "i": [ 10, 1.5 ] } ]
+["clothc",  "r4-t2", "a red and blue backpack", "emblazoned with Spider-Man imagery", false,
+            0.3, 5, "backpack", true, false, 25, 5 ]
+
+["pop", "r4-t2", "i", "r4-t1" ]
+["pop", "r4", "c", "r4-t2" ]
+
+
+["rem", "r5 Branbury Beach, Picnic Area"]
+["itemc",   "r5-t1", "some weathered plank tables", "", true, "x", "x", false, false,
+          { "o": [12000, 50000] } ]
+
+["build", "cvmd", "r5-t1", "get", "What earthly (or unearthly) reason could you have for wanting to drag these things around?"]
+["pop", "r5", "s", "r5-t1" ]
+
+
+["rem", "r6 Branbury State Park, South of Facility"]
+["dwy",     "r6-t1", "a flapping screen door", "", false, "x", "x", true ]
+
+["pop", "r6", "s", "r6-t1" ]
+
+
+["rem", "r7 Branbury State Park, Playground"]
+["itemc",   "r7-t1", "some playground equipment", "", false, "x", "x", false, false,
+          { "b": ["x", "x"] } ]
+["dwy",     "r7-t2", "a rusted iron manhole", "", false, "x", "x", true ]
+
+["pop", "r7", "s", "r7-t1" ]
+["pop", "r7-t1", "b", "r7-t2" ]
+
+
+["rem", "r8 Branbury State Park, Boat Launch"]
+["item",    "r8-t1", "a cyclone fence", "", false, "x", "x" ]
+
+["pop", "r8", "s", "r8-t1" ]
+
+
+["rem", "r9 Branbury State Park, Parking Lot"]
+
+["rem", "r10", "Underground Chamber"]
+["dwy",   "r10-t1", "an/a iron-rimmed hole", "in the ceiling of the chamber", false, "x", "x", true ]
+["dwy",   "r10-t2", "a rusty iron grating", "", true, "x", "x", true ]
+["cloth", "r10-t3", "an/a iron band", "with a wavy pattern engraved on it", false,
+          0.010, 0.010, "misc"]
+
+["pop", "r10", "s", "r10-t1", "r10-t2" ]
+["pop", "r10", "c", "r10-t3" ]
+
+
+["rem", "Miscellaneous stuff"]
+["build", "key", "r3-t3", "r3-t2", true]
+["build", "key", "r1-t4", "r10-t2", true]
+["build", "autoclose", "r1-t2", 5]
+["build", "autoclose", "r2-t4", 5]
+["build", "cvmd",  "r2-t9", "get", "You could probably pick up the bin, but it seems to be performing a useful function here."]
+
+["door", "r1-t2", "r2-t4", false]
+["door", "r1-t3", "r6-t1", false]
+["door", "r7-t2", "r10-t1", false]

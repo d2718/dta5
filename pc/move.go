@@ -2,7 +2,7 @@
 //
 // dta5 PlayerChar movement actions
 //
-// updated 2017-08-13
+// updated 2017-08-18
 //
 package pc
 
@@ -69,7 +69,7 @@ func DoMoveDir(pp *PlayerChar, dir room.NavDir) {
       tgt_rm.Contents.Add(pp)
       DoLook(pp, "look", nil, "", nil, "")
     } else {
-      pp.QWrite("%s is closed.", t_tgt.Normal(name.DEF_ART))
+      pp.QWrite("%s is closed.", util.Cap(t_tgt.Normal(name.DEF_ART)))
     }
       
   default:
