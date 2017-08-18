@@ -15,7 +15,7 @@ import( "encoding/json"; "fmt"; "net"; "os"; "path/filepath"; "sync"; "time";
 
 var PlayerDir string = "pc_dir"
 var HashCost int = 4
-var ClientVersion int = 170807
+var ClientVersion int = 170818
 
 func log(lvl dtalog.LogLvl, fmtstr string, args ...interface{}) {
   dtalog.Log(lvl, fmt.Sprintf("pc.go: " + fmtstr, args...))
