@@ -4,3 +4,10 @@
     "A loud report, like a firewrk or a mortar, echoes from across the lake.",
     "A twin-engined jet airliner makes its stately way across the sky, trailing a veil of cirrus clouds behind it.",
     "The low roar of distant lake traffic waxes and fades." ]
+
+["mood", 25, 35, ["r103"],
+    "A gentle trickling noise filters down the tunnel from the east.",
+    "A distant whooshing noise signals a car passing overhead.",
+    "You think you hear a faint dripping.",
+    "The smell of wet stone permeates the area.",
+    "On the surface, a truck's compression brakes pipe out their demon calliope cry." ]

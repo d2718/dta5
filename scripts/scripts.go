@@ -23,12 +23,6 @@ type Script func(obj, subj, dobj, iobj thing.Thing, verb, prep, text string) boo
 
 var Scripts = make(map[string]Script)
 //
-// defined in pc/get.go
-//
-//   * "CGMS" ("Cannot Get Messsage Script")
-//     Provides custom messaging informing a player why a thing.Thing can't
-//     be picked up.
-//
 // defined in pc/lock.go
 //
 //   * "locked_script"

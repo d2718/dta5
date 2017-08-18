@@ -94,23 +94,23 @@ func DoSwap(pp *PlayerChar, verb string, dobj thing.Thing, prep string,
       pp.QWrite("You have nothing to swap.")
       return
     } else {
-      m = msg.New("%s passes %s from %s left to %s right hand.",
+      m = msg.New("txt", "%s passes %s from %s left to %s right hand.",
                   util.Cap(pp.Normal(0)), lh.Normal(0),
                   pp.PossPronoun(), pp.PossPronoun())
-      m.Add(pp, "You pass %s from your left to your right hand.", lh.Normal(0))
+      m.Add(pp, "txt", "You pass %s from your left to your right hand.", lh.Normal(0))
     }
   } else {
     if lh == nil {
-      m = msg.New("%s passes %s from %s right to %s left hand.",
+      m = msg.New("txt", "%s passes %s from %s right to %s left hand.",
                   util.Cap(pp.Normal(0)), rh.Normal(0),
                   pp.PossPronoun(), pp.PossPronoun())
-      m.Add(pp, "You pass %s from your right to your left hand.", rh.Normal(0))
+      m.Add(pp, "txt", "You pass %s from your right to your left hand.", rh.Normal(0))
     } else {
-      m = msg.New("%s swaps %s in %s left hand with %s in %s right hand.",
+      m = msg.New("txt", "%s swaps %s in %s left hand with %s in %s right hand.",
                   util.Cap(pp.Normal(0)), lh.Normal(name.DEF_ART),
                   pp.PossPronoun(), rh.Normal(name.DEF_ART),
                   pp.PossPronoun())
-      m.Add(pp, "You swap %s in your left hand with %s in your right hand.",
+      m.Add(pp, "txt", "You swap %s in your left hand with %s in your right hand.",
                 lh.Normal(name.DEF_ART), rh.Normal(name.DEF_ART))
     }
   }

@@ -2,7 +2,7 @@
 //
 // dta5 PlayerChar wear/remove verbs
 //
-// updated 2017-08-15
+// updated 2017-08-18
 //
 package pc
 
@@ -66,8 +66,8 @@ func DoWear(pp *PlayerChar, verb string, dobj thing.Thing,
         templ = fmt.Sprintf("{subj} {verb} {dobj} %s.", slotName)
       }
       
-      m := msg.New(gstring.Sprintm(templ, f3p))
-      m.Add(pp, gstring.Sprintm(templ, f1p))
+      m := msg.New("txt", gstring.Sprintm(templ, f3p))
+      m.Add(pp, "txt", gstring.Sprintm(templ, f1p))
       pp.where.Place.(*room.Room).Deliver(m)
     } else {
       f1p := map[string]interface{} { "pp": "your" }
@@ -126,8 +126,8 @@ func DoRemove(pp *PlayerChar, verb string, dobj thing.Thing,
     templ = "{subj} {verb} {dobj}"
   }
   
-  m := msg.New(gstring.Sprintm(templ, f3p))
-  m.Add(pp, gstring.Sprintm(templ, f1p))
+  m := msg.New("txt", gstring.Sprintm(templ, f3p))
+  m.Add(pp, "txt", gstring.Sprintm(templ, f1p))
   
   if rh == nil {
     bod.SetHeld("right_hand", dobj)

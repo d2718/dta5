@@ -2,7 +2,7 @@
 //
 // dta5 PlayerChar pointing, waving, etc.
 //
-// updated 2017-08-14
+// updated 2017-08-18
 //
 package pc
 
@@ -39,8 +39,8 @@ func DoPointDir(pp *PlayerChar, verb string, dirNum room.NavDir,
   var m *msg.Message
   
   if iobj == nil {
-    m = msg.New(gstring.Sprintm(pointDirDefaultTemplate, f3p))
-    m.Add(pp, gstring.Sprintm(pointDirDefaultTemplate, f1p))
+    m = msg.New("txt", gstring.Sprintm(pointDirDefaultTemplate, f3p))
+    m.Add(pp, "txt", gstring.Sprintm(pointDirDefaultTemplate, f1p))
   } else {
     if !pp.Body().IsHolding(iobj) {
       pp.QWrite("You are not holding %s.", iobj.Normal(name.DEF_ART))
@@ -50,8 +50,8 @@ func DoPointDir(pp *PlayerChar, verb string, dirNum room.NavDir,
     f1p["iobj"] = iobj.Normal(name.NO_ART)
     f3p["iobj"] = f1p["iobj"]
     
-    m = msg.New(gstring.Sprintm(pointDirWithTemplate, f3p))
-    m.Add(pp, gstring.Sprintm(pointDirWithTemplate, f1p))
+    m = msg.New("txt", gstring.Sprintm(pointDirWithTemplate, f3p))
+    m.Add(pp, "txt", gstring.Sprintm(pointDirWithTemplate, f1p))
   }
   
   pp.where.Place.(*room.Room).Deliver(m)
@@ -80,8 +80,8 @@ func DoPoint(pp *PlayerChar, verb string, dobj thing.Thing,
   if dobj == nil {
     
     if iobj == nil {
-      m = msg.New(gstring.Sprintm(pointIntransTemplate, f3p))
-      m.Add(pp, gstring.Sprintm(pointIntransTemplate, f1p))
+      m = msg.New("txt", gstring.Sprintm(pointIntransTemplate, f3p))
+      m.Add(pp, "txt", gstring.Sprintm(pointIntransTemplate, f1p))
       
     } else if prep == "with" {
       if !pp.Body().IsHolding(iobj) {
@@ -90,15 +90,15 @@ func DoPoint(pp *PlayerChar, verb string, dobj thing.Thing,
       }
       f1p["iobj"] = iobj.Normal(name.NO_ART)
       f3p["iobj"] = f1p["iobj"]
-      m = msg.New(gstring.Sprintm(pointIntransWithTemplate, f3p))
-      m.Add(pp, gstring.Sprintm(pointIntransWithTemplate, f1p))
+      m = msg.New("txt", gstring.Sprintm(pointIntransWithTemplate, f3p))
+      m.Add(pp, "txt", gstring.Sprintm(pointIntransWithTemplate, f1p))
       
     } else {
       f1p["iobj"] = iobj.Normal(0)
       f3p["iobj"] = f1p["iobj"]
       f1p["prep"], f3p["prep"] = prep, prep
-      m = msg.New(gstring.Sprintm(pointIndOnlyTemplate, f3p))
-      m.Add(pp, gstring.Sprintm(pointIndOnlyTemplate, f1p))
+      m = msg.New("txt", gstring.Sprintm(pointIndOnlyTemplate, f3p))
+      m.Add(pp, "txt", gstring.Sprintm(pointIndOnlyTemplate, f1p))
     }
     
   } else if dobj == pp {
@@ -106,8 +106,8 @@ func DoPoint(pp *PlayerChar, verb string, dobj thing.Thing,
     f3p["dobj"] = pp.ReflexPronoun()
     
     if iobj == nil {
-      m = msg.New(gstring.Sprintm(pointTransTemplate, f3p))
-      m.Add(pp, gstring.Sprintm(pointTransTemplate, f1p))
+      m = msg.New("txt", gstring.Sprintm(pointTransTemplate, f3p))
+      m.Add(pp, "txt", gstring.Sprintm(pointTransTemplate, f1p))
     } else if prep == "with" {
       if !pp.Body().IsHolding(iobj) {
         pp.QWrite("You are not holding %s.", iobj.Normal(name.DEF_ART))
@@ -115,8 +115,8 @@ func DoPoint(pp *PlayerChar, verb string, dobj thing.Thing,
       }
       f1p["iobj"] = iobj.Normal(name.NO_ART)
       f3p["iobj"] = f1p["iobj"]
-      m = msg.New(gstring.Sprintm(pointTransWithTemplate, f3p))
-      m.Add(pp, gstring.Sprintm(pointTransWithTemplate, f1p))
+      m = msg.New("txt", gstring.Sprintm(pointTransWithTemplate, f3p))
+      m.Add(pp, "txt", gstring.Sprintm(pointTransWithTemplate, f1p))
     } else {
       pp.QWrite("Look, that syntax just isn't supported yet.")
     }
@@ -130,9 +130,9 @@ func DoPoint(pp *PlayerChar, verb string, dobj thing.Thing,
     f3p["dobj"] = f1p["dobj"]
     
     if iobj == nil {
-      m = msg.New(gstring.Sprintm(pointTransTemplate, f3p))
-      m.Add(pp, gstring.Sprintm(pointTransTemplate, f1p))
-      m.Add(dobj, gstring.Sprintm(pointTransTemplate, f2p))
+      m = msg.New("txt", gstring.Sprintm(pointTransTemplate, f3p))
+      m.Add(pp, "txt", gstring.Sprintm(pointTransTemplate, f1p))
+      m.Add(dobj, "txt", gstring.Sprintm(pointTransTemplate, f2p))
       
     } else if prep == "with" {
       if !pp.Body().IsHolding(iobj) {
@@ -141,9 +141,9 @@ func DoPoint(pp *PlayerChar, verb string, dobj thing.Thing,
       }
       iname := iobj.Normal(name.NO_ART)
       f1p["iobj"], f2p["iobj"], f3p["iobj"] = iname, iname, iname
-      m = msg.New(gstring.Sprintm(pointTransWithTemplate, f3p))
-      m.Add(pp, gstring.Sprintm(pointTransWithTemplate, f1p))
-      m.Add(dobj, gstring.Sprintm(pointTransWithTemplate, f2p))
+      m = msg.New("txt", gstring.Sprintm(pointTransWithTemplate, f3p))
+      m.Add(pp, "txt", gstring.Sprintm(pointTransWithTemplate, f1p))
+      m.Add(dobj, "txt", gstring.Sprintm(pointTransWithTemplate, f2p))
       
     } else {
       pp.QWrite("Look, that syntax just isn't supported yet.")

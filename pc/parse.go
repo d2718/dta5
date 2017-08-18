@@ -7,6 +7,7 @@
 package pc
 
 import( "strings";
+        "dta5/msg";
         "dta5/name"; "dta5/room"; "dta5/scripts"; "dta5/thing"; "dta5/util";
 )
 
@@ -21,8 +22,13 @@ var parseVerbs []string = []string{
   
   // directional emote verbs (pc/emote.go)
   "blink", "chuckle", "gaze", "frown", "glance", "grin", "lean",
-  "nod", "raise", "shrug", "sigh", "snap", "sneer", "snicker", "squint",
-  "stare", "wink",
+  "nod", "raise", "shake", "shrug", "sigh", "snap", "sneer",
+  "snicker", "squint", "stare", "wink",
+}
+
+var verbTranslation map[string]string = map[string]string {
+  "take": "get",
+  "drop": "put",
 }
 
 var parsePreps map[string]byte = map[string]byte {
@@ -46,7 +52,6 @@ type DoFunc func(*PlayerChar, string, thing.Thing, string, thing.Thing, string)
 
 var parseDispatch map[string]ParseFunc = map[string]ParseFunc {
   "close":      ParseLikeLook,
-  "drop":       ParseLikePut,
   "examine":    ParseLikePut,
   "exits":      ParseIntransitive,
   "get":        ParseLikeLook,
@@ -60,7 +65,6 @@ var parseDispatch map[string]ParseFunc = map[string]ParseFunc {
   "remove":     ParseLikePut,
   "say":        ParseIntransitive,
   "swap":       ParseIntransitive,
-  "take":       ParseLikeLook,
   "unlock":     ParseLikeLock,
   "wear":       ParseLikePut,
   
@@ -80,6 +84,7 @@ var parseDispatch map[string]ParseFunc = map[string]ParseFunc {
   "lean":       ParseEmote,
   "nod":        ParseEmote,
   "raise":      ParseEmote,
+  "shake":      ParseEmote,
   "shrug":      ParseEmote,
   "sigh":       ParseEmote,
   "snap":       ParseEmote,
@@ -92,7 +97,6 @@ var parseDispatch map[string]ParseFunc = map[string]ParseFunc {
 
 var doDispatch map[string]DoFunc = map[string]DoFunc {
   "close":      DoClose,
-  "drop":       DoPut,
   "examine":    DoExamine,
   "exits":      DoExits,
   "get":        DoGet,
@@ -106,7 +110,6 @@ var doDispatch map[string]DoFunc = map[string]DoFunc {
   "remove":     DoRemove,
   "say":        DoSay,
   "swap":       DoSwap,
-  "take":       DoGet,
   "unlock":     DoLock, // this is correct
   "wear":       DoWear,
   
@@ -126,6 +129,7 @@ var doDispatch map[string]DoFunc = map[string]DoFunc {
   "lean":       DoEmote,
   "nod":        DoEmote,
   "raise":      DoEmote,
+  "shake":      DoEmote,
   "shrug":      DoEmote,
   "sigh":       DoEmote,
   "snap":       DoEmote,
@@ -186,7 +190,7 @@ func matchVerb(token string) string {
 
 func (pp *PlayerChar) Parse(cmd string) error {
   
-  pp.Send(PM{Type: "echo", Payload: cmd})
+  pp.Send(msg.Env{Type: "echo", Text: cmd})
   
   if len(cmd) == 0 {
     pp.QWrite("Sorry, what?")
@@ -215,6 +219,7 @@ func (pp *PlayerChar) Parse(cmd string) error {
   
   var t_verb string = toks[0]
   var verb string = ""
+  var ok bool = false
   toks = toks[1:]
   
   for _, v := range parseVerbs {
@@ -222,6 +227,10 @@ func (pp *PlayerChar) Parse(cmd string) error {
       verb = v
       break
     }
+  }
+  
+  if t_verb, ok = verbTranslation[verb]; ok {
+    verb = t_verb
   }
   
   if parse_func, ok := parseDispatch[verb]; ok {

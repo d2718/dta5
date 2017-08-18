@@ -19,6 +19,7 @@ type verbConj struct {
 var emoteVerbFilter = map[string]verbConj {
   "nod":    verbConj{ "nod your head", "nods his head" },
   "raise":  verbConj{ "raise your eyebrows", "raises {subj_pp} eyebrows" },
+  "shake":  verbConj{ "shake your head", "shakes {subj_pp} head" },
   "snap":   verbConj{ "snap your fingers", "snaps his fingers" },
 }
 
@@ -47,6 +48,7 @@ var dirTemplates = map[string]string {
   "chuckle":  dirGlanceTemplate,
   "frown":    dirGlanceTemplate,
   "raise":    dirGlanceTemplate,
+  "shake":    dirGlanceTemplate,
   "shrug":    dirGlanceTemplate,
   "sigh":     dirGlanceTemplate,
   "snap":     dirGlanceTemplate,
@@ -83,8 +85,8 @@ func DoEmoteDir(pp *PlayerChar, verb string, dirNum room.NavDir) {
     templ = dirDefaultTemplate
   }
   
-  m := msg.New(util.Cap(gstring.Sprintm(templ, f3p)))
-  m.Add(pp, util.Cap(gstring.Sprintm(templ, f1p)))
+  m := msg.New("txt", util.Cap(gstring.Sprintm(templ, f3p)))
+  m.Add(pp, "txt", util.Cap(gstring.Sprintm(templ, f1p)))
   
   pp.where.Place.(*room.Room).Deliver(m)
 
@@ -126,8 +128,8 @@ func DoEmote(pp *PlayerChar, verb string, dobj thing.Thing,
   
   if iobj == nil {
     if dobj == nil {
-      m = msg.New(util.Cap(gstring.Sprintm(emoteIntransTemplate, f3p)))
-      m.Add(pp, util.Cap(gstring.Sprintm(emoteIntransTemplate, f1p)))
+      m = msg.New("txt", util.Cap(gstring.Sprintm(emoteIntransTemplate, f3p)))
+      m.Add(pp, "txt", util.Cap(gstring.Sprintm(emoteIntransTemplate, f1p)))
       
     } else if dobj == pp {
       f1p["subj_rp"] = "yourself"
@@ -139,8 +141,8 @@ func DoEmote(pp *PlayerChar, verb string, dobj thing.Thing,
       }
       f1p["sp_prep"] = sp_prep
       f3p["sp_prep"] = sp_prep
-      m = msg.New(util.Cap(gstring.Sprintm(emoteReflexTemplate, f3p)))
-      m.Add(pp, util.Cap(gstring.Sprintm(emoteReflexTemplate, f1p)))
+      m = msg.New("txt", util.Cap(gstring.Sprintm(emoteReflexTemplate, f3p)))
+      m.Add(pp, "txt", util.Cap(gstring.Sprintm(emoteReflexTemplate, f1p)))
       
     } else {
       f2p := map[string]interface{} {"subj": pp.Normal(0),
@@ -163,9 +165,9 @@ func DoEmote(pp *PlayerChar, verb string, dobj thing.Thing,
       f2p["sp_prep"] = sp_prep
       f3p["sp_prep"] = sp_prep
       
-      m = msg.New(util.Cap(gstring.Sprintm(emoteDirOnlyTemplate, f3p)))
-      m.Add(pp, util.Cap(gstring.Sprintm(emoteDirOnlyTemplate, f1p)))
-      m.Add(dobj, util.Cap(gstring.Sprintm(emoteDirOnlyTemplate, f2p)))
+      m = msg.New("txt", util.Cap(gstring.Sprintm(emoteDirOnlyTemplate, f3p)))
+      m.Add(pp, "txt", util.Cap(gstring.Sprintm(emoteDirOnlyTemplate, f1p)))
+      m.Add(dobj, "txt", util.Cap(gstring.Sprintm(emoteDirOnlyTemplate, f2p)))
     }
     
   } else {
@@ -189,8 +191,8 @@ func DoEmote(pp *PlayerChar, verb string, dobj thing.Thing,
       f1p["glance"] = "glance"
       f3p["glance"] = "glances"
       
-      m = msg.New(util.Cap(gstring.Sprintm(emoteIndOnlyTemplate, f3p)))
-      m.Add(pp, util.Cap(gstring.Sprintm(emoteIndOnlyTemplate, f1p)))
+      m = msg.New("txt", util.Cap(gstring.Sprintm(emoteIndOnlyTemplate, f3p)))
+      m.Add(pp, "txt", util.Cap(gstring.Sprintm(emoteIndOnlyTemplate, f1p)))
       
     } else {
       f1p["dobj"] = dobj.Normal(0)
@@ -207,8 +209,8 @@ func DoEmote(pp *PlayerChar, verb string, dobj thing.Thing,
       f1p["sp_prep"] = sp_prep
       f3p["sp_prep"] = sp_prep
       
-      m = msg.New(util.Cap(gstring.Sprintm(emoteBothTemplate, f3p)))
-      m.Add(pp, util.Cap(gstring.Sprintm(emoteBothTemplate, f1p)))
+      m = msg.New("txt", util.Cap(gstring.Sprintm(emoteBothTemplate, f3p)))
+      m.Add(pp, "txt", util.Cap(gstring.Sprintm(emoteBothTemplate, f1p)))
     }
   }
   

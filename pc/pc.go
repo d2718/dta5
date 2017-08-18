@@ -2,7 +2,7 @@
 //
 // dta5 Player Character stuff
 //
-// updated 2017-08-08
+// updated 2017-08-18
 //
 package pc
 
@@ -32,11 +32,6 @@ type PlayerState struct {
   name.Gender
   Location  string
   Inventory []string
-}
-
-type PM struct {
-  Type string
-  Payload string
 }
 
 const INV byte = 0
@@ -81,11 +76,11 @@ func Login(newConn net.Conn) error {
   new_rcvr := json.NewDecoder(newConn)
   new_sndr := json.NewEncoder(newConn)
   
-  var mesg PM = PM{ Type: "version", Payload: "experimental", }
+  var mesg msg.Env = msg.Env{ Type: "version", Text: "experimental", }
   err := new_sndr.Encode(mesg)
   if err != nil {
     log(dtalog.ERR, "Login(): error sending version message: %s", err)
-    mesg = PM{ Type: "logout", Payload: "communication error", }
+    mesg = msg.Env{ Type: "logout", Text: "communication error", }
     new_sndr.Encode(mesg)
     newConn.Close()
     return err
@@ -95,7 +90,7 @@ func Login(newConn net.Conn) error {
   err = new_rcvr.Decode(&mesg)
   if err != nil {
     log(dtalog.ERR, "Login(): error decoding version message: %s", err)
-    mesg = PM{ Type: "logout", Payload: "communication error", }
+    mesg = msg.Env{ Type: "logout", Text: "communication error", }
     new_sndr.Encode(mesg)
     newConn.Close()
     return err
@@ -103,17 +98,17 @@ func Login(newConn net.Conn) error {
   
   if mesg.Type != "version" {
     log(dtalog.MSG, "Login(): incorrect protocol from client")
-    reply := PM{ Type: "logout", Payload: "incorrect login protocol", }
+    reply := msg.Env{ Type: "logout", Text: "incorrect login protocol", }
     new_sndr.Encode(reply)
     newConn.Close()
     return fmt.Errorf("incorrect login protocol: %v", mesg)
   }
   
   var version int
-  fmt.Sscanf(mesg.Payload, "%d", &version)
+  fmt.Sscanf(mesg.Text, "%d", &version)
   if version < ClientVersion {
     log(dtalog.MSG, "Login(): client (version %d) out of date, rejecting login", version)
-    reply := PM{ Type: "logout", Payload: "updated client required", }
+    reply := msg.Env{ Type: "logout", Text: "updated client required", }
     new_sndr.Encode(reply)
     newConn.Close()
     return fmt.Errorf("client update required")
@@ -122,7 +117,7 @@ func Login(newConn net.Conn) error {
   err = new_rcvr.Decode(&mesg)
   if err != nil {
     log(dtalog.ERR, "Login(): error decoding uname message: %s", err)
-    mesg = PM{ Type: "logout", Payload: "communication error", }
+    mesg = msg.Env{ Type: "logout", Text: "communication error", }
     new_sndr.Encode(mesg)
     newConn.Close()
     return err
@@ -131,17 +126,17 @@ func Login(newConn net.Conn) error {
   
   if mesg.Type != "uname" {
     log(dtalog.MSG, "Login(): incorrect protocol from client")
-    reply := PM{ Type: "logout", Payload: "incorrect login protocol", }
+    reply := msg.Env{ Type: "logout", Text: "incorrect login protocol", }
     new_sndr.Encode(reply)
     newConn.Close()
     return fmt.Errorf("incorrect login protocol: %v", mesg)
   }
-  uname := mesg.Payload
+  uname := mesg.Text
   
   err = new_rcvr.Decode(&mesg)
   if err != nil {
     log(dtalog.ERR, "Login(): error decoding pwd message: %s", err)
-    mesg = PM{ Type: "logout", Payload: "communication error", }
+    mesg = msg.Env{ Type: "logout", Text: "communication error", }
     new_sndr.Encode(mesg)
     newConn.Close()
     return err
@@ -150,18 +145,18 @@ func Login(newConn net.Conn) error {
   
   if mesg.Type != "pwd" {
     log(dtalog.MSG, "Login(): incorrect protocol from client")
-    reply := PM{ Type: "logout", Payload: "incorrect login protocol", }
+    reply := msg.Env{ Type: "logout", Text: "incorrect login protocol", }
     new_sndr.Encode(reply)
     newConn.Close()
     return fmt.Errorf("incorrect login protocol: %v", mesg)
   }
-  pwd := mesg.Payload
+  pwd := mesg.Text
   
   plr_path := filepath.Join(PlayerDir, uname + ".json")
   f, err := os.Open(plr_path)
   if err != nil {
     log(dtalog.ERR, "Login(): error opening file %q: %s", plr_path, err)
-    reply := PM{ Type: "logout", Payload: fmt.Sprintf("unable to login %q", uname), }
+    reply := msg.Env{ Type: "logout", Text: fmt.Sprintf("unable to login %q", uname), }
     new_sndr.Encode(reply)
     newConn.Close()
     return fmt.Errorf("cannot open file %q", plr_path)
@@ -174,7 +169,7 @@ func Login(newConn net.Conn) error {
   
   if err != nil {
     log(dtalog.ERR, "Login(): error reading file %q: %s", plr_path, err)
-    reply := PM{ Type: "logout", Payload: "there was an error", }
+    reply := msg.Env{ Type: "logout", Text: "there was an error", }
     new_sndr.Encode(reply)
     newConn.Close()
     return err
@@ -183,7 +178,7 @@ func Login(newConn net.Conn) error {
   
   if bcrypt.CompareHashAndPassword([]byte(ps.PassHash), []byte(pwd)) != nil {
     log(dtalog.MSG, "Login(): hashed password does not match")
-    reply := PM{ Type: "logout", Payload: "username and password don't match", }
+    reply := msg.Env{ Type: "logout", Text: "username and password don't match", }
     new_sndr.Encode(reply)
     newConn.Close()
     return fmt.Errorf("username and password don't match")
@@ -191,7 +186,7 @@ func Login(newConn net.Conn) error {
   
   if ref.Deref(ps.RefToken) != nil {
     log(dtalog.MSG, "Login(): player %q already logged in", uname)
-    reply := PM{ Type: "logout", Payload: fmt.Sprintf("user %q already logged in", uname), }
+    reply := msg.Env{ Type: "logout", Text: fmt.Sprintf("user %q already logged in", uname), }
     new_sndr.Encode(reply)
     newConn.Close()
     return fmt.Errorf("user already logged in")
@@ -244,8 +239,8 @@ func Login(newConn net.Conn) error {
   start_room.Contents.Add(&new_pc)
   log(dtalog.DBG, "Login(): added to Room")
   
-  arrive_msg := msg.New(fmt.Sprintf("%s arrives.", new_pc.Normal(0)))
-  arrive_msg.Add(&new_pc, "You arrive.")
+  arrive_msg := msg.New("txt", fmt.Sprintf("%s arrives.", new_pc.Normal(0)))
+  arrive_msg.Add(&new_pc, "txt", "You arrive.")
   
   greet_act := act.Action{
     Time: time.Now(),
@@ -306,11 +301,11 @@ func (pp *PlayerChar) Logout() error {
   }
   
   loc := pp.where.Place.(*room.Room)
-  m := msg.New(fmt.Sprintf("%s leaves.", pp.Normal(0)))
-  m.Add(pp, "You leave.")
+  m := msg.New("txt", fmt.Sprintf("%s leaves.", pp.Normal(0)))
+  m.Add(pp, "txt", "You leave.")
   loc.Deliver(m)
   loc.Contents.Remove(pp)
-  pp.Send(PM{ Type: "logout", Payload: "You have been logged out.", })
+  pp.Send(msg.Env{ Type: "logout", Text: "You have been logged out.", })
   pp.conn.Close()
   delete(PlayerChars, pp.ref)
   ref.Deregister(pp)
@@ -326,7 +321,7 @@ func (pp *PlayerChar) Save(save.Saver) {
 //
 func (pp *PlayerChar) listen() {
   for {
-    var cmd PM
+    var cmd msg.Env
     err := pp.rcvr.Decode(&cmd)
     if err != nil {
       log(dtalog.ERR, "(*PlayerChar %q) listen(): error receiving: %s",
@@ -335,14 +330,14 @@ func (pp *PlayerChar) listen() {
     } else if cmd.Type == "cmd" {
       a := act.Action{
         Time: time.Now(),
-        Act: func() error { return pp.Parse(cmd.Payload)},
+        Act: func() error { return pp.Parse(cmd.Text)},
       }
       act.Enqueue(&a)
     }
   }
 }
 
-func (p PlayerChar) Send(pm PM) {
+func (p PlayerChar) Send(pm msg.Env) {
   p.sndlockr.Lock()
   p.sndr.Encode(pm)
   p.sndlockr.Unlock()
@@ -350,38 +345,38 @@ func (p PlayerChar) Send(pm PM) {
 
 func (pp* PlayerChar) QWrite(fmtstr string, args ...interface{}) {
   txt := fmt.Sprintf(fmtstr, args...)
-  pp.Send(PM{ Type: "txt", Payload: txt, })
+  pp.Send(msg.Env{ Type: "txt", Text: txt, })
 } 
 
 func (pp *PlayerChar) Deliver(m *msg.Message) {
-  txt, ok := m.Dir[pp]
+  nvlp, ok := m.Dir[pp]
   if !ok {
-    txt = m.Gen
+    nvlp = m.Gen
   }
-  if len(txt) > 0 {
-    pp.Send(PM{ Type: "txt", Payload: txt})
+  if len(nvlp.Text) > 0 {
+    pp.Send(nvlp)
   }
 }
 
-func (pp *PlayerChar) React(cmd string) {
-  log(dtalog.DBG, "(*PlayerChar %q) React(): reacting: %q", pp.Short(0), cmd)
+//~ func (pp *PlayerChar) React(cmd string) {
+  //~ log(dtalog.DBG, "(*PlayerChar %q) React(): reacting: %q", pp.Short(0), cmd)
   
-  if cmd == "quit" {
-    pp.Logout()
-    return
-  }
+  //~ if cmd == "quit" {
+    //~ pp.Logout()
+    //~ return
+  //~ }
   
-  m := msg.New(fmt.Sprintf("%s does this: %s", pp.Normal(0), cmd))
-  m.Add(pp, fmt.Sprintf("You do this: %s", cmd))
-  a := act.Action{
-    Time: time.Now(),
-    Act: func() error {
-      pp.where.Place.(*room.Room).Deliver(m)
-      return nil
-    },
-  }
-  act.Enqueue(&a)
-}
+  //~ m := msg.New(fmt.Sprintf("%s does this: %s", pp.Normal(0), cmd))
+  //~ m.Add(pp, fmt.Sprintf("You do this: %s", cmd))
+  //~ a := act.Action{
+    //~ Time: time.Now(),
+    //~ Act: func() error {
+      //~ pp.where.Place.(*room.Room).Deliver(m)
+      //~ return nil
+    //~ },
+  //~ }
+  //~ act.Enqueue(&a)
+//~ }
 
 // AllButMe() returns a thing.ThingList containing the PlayerChar's current
 // room.Room's.Contents but without the PlayerChar.
@@ -416,7 +411,7 @@ func (p PlayerChar) InHand(obj thing.Thing) bool {
 func (pp PlayerChar) SetDescPage(sp *string) { return }
 func (pp PlayerChar) Desc() string { return fmt.Sprintf("You see %s.", pp.Full(0)) }
 
-func Wall(pm PM) {
+func Wall(pm msg.Env) {
   for _, pp := range PlayerChars {
     pp.Send(pm)
   }

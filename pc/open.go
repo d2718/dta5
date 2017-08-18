@@ -2,7 +2,7 @@
 //
 // dta5 PlayerChar open/close verbs
 //
-// updated 2017-08-14
+// updated 2017-08-18
 //
 package pc
 
@@ -38,22 +38,22 @@ func DoOpen(pp *PlayerChar, verb string,
     
     if iobj == nil {
       if dobj.Loc().Place == pp {
-        act_msg = msg.New("%s opens %s %s.", util.Cap(pp.Normal(0)),
+        act_msg = msg.New("txt", "%s opens %s %s.", util.Cap(pp.Normal(0)),
                           pp.PossPronoun(), dobj.Normal(name.NO_ART))
-        act_msg.Add(pp, "You open your %s.", dobj.Normal(name.NO_ART))
+        act_msg.Add(pp, "txt", "You open your %s.", dobj.Normal(name.NO_ART))
       } else {
-        act_msg = msg.New("%s open %s.", util.Cap(pp.Normal(0)), dobj.Normal(0))
-        act_msg.Add(pp, "You open %s.", dobj.Normal(0))
+        act_msg = msg.New("txt", "%s open %s.", util.Cap(pp.Normal(0)), dobj.Normal(0))
+        act_msg.Add(pp, "txt", "You open %s.", dobj.Normal(0))
       }
     } else {
       if prep == "on" {
-        act_msg = msg.New("%s opens %s on %s.", util.Cap(pp.Normal(0)),
+        act_msg = msg.New("txt", "%s opens %s on %s.", util.Cap(pp.Normal(0)),
                           dobj.Normal(0), iobj.Normal(0))
-        act_msg.Add(pp, "You open %s on %s.", dobj.Normal(0), iobj.Normal(0))
+        act_msg.Add(pp, "txt", "You open %s on %s.", dobj.Normal(0), iobj.Normal(0))
       } else {
-        act_msg = msg.New("%s opens something %s %s.", util.Cap(pp.Normal(0)),
+        act_msg = msg.New("txt", "%s opens something %s %s.", util.Cap(pp.Normal(0)),
                           prep, iobj.Normal(0))
-        act_msg.Add(pp, "You open %s %s %s.", dobj.Normal(0), prep, iobj.Normal(0))
+        act_msg.Add(pp, "txt", "You open %s %s %s.", dobj.Normal(0), prep, iobj.Normal(0))
       }
     }
     
@@ -62,7 +62,7 @@ func DoOpen(pp *PlayerChar, verb string,
     
     if t_dobj, ok := dobj.(*door.Doorway); ok {
       od := t_dobj.Other()
-      om := msg.New("%s opens.", util.Cap(od.Normal(0)))
+      om := msg.New("txt", "%s opens.", util.Cap(od.Normal(0)))
       od.Loc().Place.(msg.Messageable).Deliver(om)
     }
     
@@ -96,22 +96,22 @@ func DoClose(pp *PlayerChar, verb string,
     
     if iobj == nil {
       if dobj.Loc().Place == pp {
-        act_msg = msg.New("%s closes %s %s.", util.Cap(pp.Normal(0)),
+        act_msg = msg.New("txt", "%s closes %s %s.", util.Cap(pp.Normal(0)),
                           pp.PossPronoun(), dobj.Normal(name.NO_ART))
-        act_msg.Add(pp, "You close your %s.", dobj.Normal(name.NO_ART))
+        act_msg.Add(pp, "txt", "You close your %s.", dobj.Normal(name.NO_ART))
       } else {
-        act_msg = msg.New("%s closes %s.", util.Cap(pp.Normal(0)), dobj.Normal(0))
-        act_msg.Add(pp, "You close %s.", dobj.Normal(0))
+        act_msg = msg.New("txt", "%s closes %s.", util.Cap(pp.Normal(0)), dobj.Normal(0))
+        act_msg.Add(pp, "txt", "You close %s.", dobj.Normal(0))
       }
     } else {
       if prep == "on" {
-        act_msg = msg.New("%s closes %s on %s.", util.Cap(pp.Normal(0)),
+        act_msg = msg.New("txt", "%s closes %s on %s.", util.Cap(pp.Normal(0)),
                           dobj.Normal(0), iobj.Normal(0))
-        act_msg.Add(pp, "You close %s on %s.", dobj.Normal(0), iobj.Normal(0))
+        act_msg.Add(pp, "txt", "You close %s on %s.", dobj.Normal(0), iobj.Normal(0))
       } else {
-        act_msg = msg.New("%s closes something %s %s.", util.Cap(pp.Normal(0)),
+        act_msg = msg.New("txt", "%s closes something %s %s.", util.Cap(pp.Normal(0)),
                           prep, iobj.Normal(0))
-        act_msg.Add(pp, "You close %s %s %s.", dobj.Normal(0), prep, iobj.Normal(0))
+        act_msg.Add(pp, "txt", "You close %s %s %s.", dobj.Normal(0), prep, iobj.Normal(0))
       }
     }
     
@@ -120,7 +120,7 @@ func DoClose(pp *PlayerChar, verb string,
     
     if t_dobj, ok := dobj.(*door.Doorway); ok {
       od := t_dobj.Other()
-      om := msg.New("%s closes.", util.Cap(od.Normal(0)))
+      om := msg.New("txt", "%s closes.", util.Cap(od.Normal(0)))
       od.Loc().Place.(msg.Messageable).Deliver(om)
     }
     
@@ -162,12 +162,12 @@ func AutoCloseScript(obj, subj, dobj, iobj thing.Thing,
   var close_func = func() error {
     if t_dobj.IsOpen() {
       t_dobj.SetOpen(false)
-      m := msg.New("%s closes.", util.Cap(dobj.Normal(0)))
+      m := msg.New("txt", "%s closes.", util.Cap(dobj.Normal(0)))
       dobj.Loc().Place.(msg.Messageable).Deliver(m)
       
       if dwy, ok := dobj.(*door.Doorway); ok {
         o_dwy := dwy.Other()
-        om := msg.New("%s closes.", util.Cap(o_dwy.Normal(0)))
+        om := msg.New("txt", "%s closes.", util.Cap(o_dwy.Normal(0)))
         o_dwy.Loc().Place.(msg.Messageable).Deliver(om)
       }
     }

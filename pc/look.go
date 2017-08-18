@@ -2,13 +2,14 @@
 //
 // dta5 PlayerChar look verb
 //
-// updated 2017-08-11
+// updated 2017-08-18
 //
 package pc
 
 import( "fmt"; "strings";
         "github.com/delicb/gstring";
-        "dta5/body"; "dta5/name"; "dta5/room"; "dta5/thing"; "dta5/util";
+        "dta5/body"; "dta5/msg"; "dta5/name"; "dta5/room"; "dta5/thing";
+        "dta5/util";
 )
 
 func DoLook(pp *PlayerChar, verb string,
@@ -117,7 +118,7 @@ func DoLook(pp *PlayerChar, verb string,
         also = ""
       }
       
-      pp.Send(PM{Type: "headline", Payload: rm_name})
+      pp.Send(msg.Env{Type: "headline", Text: rm_name})
       pp.QWrite("\n* %s *\n\n%s%s", rm_name, rm_text, also)
     }
   }

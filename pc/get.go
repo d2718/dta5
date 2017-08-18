@@ -2,13 +2,13 @@
 //
 // dta5 PlayerChar get, put verbs
 //
-// updated 2017-07-29
+// updated 2017-08-18
 //
 package pc
 
 import(
         "dta5/log";
-        "dta5/msg"; "dta5/name"; "dta5/ref"; "dta5/room"; "dta5/scripts";
+        "dta5/msg"; "dta5/name"; "dta5/ref"; "dta5/room";
         "dta5/thing"; "dta5/util";
 )
 
@@ -68,12 +68,12 @@ func DoGet(pp *PlayerChar, verb string,
       }
     }
     
-    mesg := msg.New("%s picks up %s.", util.Cap(pp.Normal(0)), dobj.Normal(0))
-    mesg.Add(pp, "You pick up %s.", dobj.Normal(0))
+    mesg := msg.New("txt", "%s picks up %s.", util.Cap(pp.Normal(0)), dobj.Normal(0))
+    mesg.Add(pp, "txt", "You pick up %s.", dobj.Normal(0))
     r.Deliver(mesg)
     
     if len(revealed) > 0 {
-      mesg = msg.New("Picking up %s reveals %s.", dobj.Short(name.DEF_ART),
+      mesg = msg.New("txt", "Picking up %s reveals %s.", dobj.Short(name.DEF_ART),
                       util.EnglishList(revealed))
       r.Deliver(mesg)
     }
@@ -98,9 +98,9 @@ func DoGet(pp *PlayerChar, verb string,
       }
     }
     
-    mesg := msg.New("%s gets a %s from %s %s.", util.Cap(pp.Normal(0)),
+    mesg := msg.New("txt", "%s gets a %s from %s %s.", util.Cap(pp.Normal(0)),
                     dobj.Normal(0), prep, iobj.Normal(0))
-    mesg.Add(pp, "You get a %s from %s %s.", dobj.Normal(0), prep, iobj.Normal(0))
+    mesg.Add(pp, "txt", "You get a %s from %s %s.", dobj.Normal(0), prep, iobj.Normal(0))
     pp.where.Place.(*room.Room).Deliver(mesg)
     
     if len(revealed) > 0 {
@@ -177,9 +177,9 @@ func DoPut(pp *PlayerChar, verb string,
       pp.Inventory.Remove(dobj)
       sid.Add(dobj)
       
-      put_msg := msg.New("%s puts %s %s %s.", util.Cap(pp.Normal(0)),
+      put_msg := msg.New("txt", "%s puts %s %s %s.", util.Cap(pp.Normal(0)),
                           dobj.Normal(0), prep, iobj.Normal(0))
-      put_msg.Add(pp, "You put %s %s %s.", dobj.Normal(0), prep, iobj.Normal(0))
+      put_msg.Add(pp, "txt", "You put %s %s %s.", dobj.Normal(0), prep, iobj.Normal(0))
       pp.where.Place.(*room.Room).Deliver(put_msg)
       return
     default:
@@ -197,34 +197,9 @@ func DoPut(pp *PlayerChar, verb string,
     pp.Inventory.Remove(dobj)
     rm.Contents.Add(dobj)
     
-    put_msg := msg.New("%s drops %s.", util.Cap(pp.Normal(0)), dobj.Normal(0))
-    put_msg.Add(pp, "You drop %s.", dobj.Normal(0))
+    put_msg := msg.New("txt", "%s drops %s.", util.Cap(pp.Normal(0)), dobj.Normal(0))
+    put_msg.Add(pp, "txt", "You drop %s.", dobj.Normal(0))
     rm.Deliver(put_msg)
     return
   }
-}
-
-func CannotGetMessageScript(obj, subj, dobj, iobj thing.Thing,
-                            verb, prep, text string) bool {
-  
-  if obj != dobj { return true }
-  
-  var no_get_msg string
-  var ok bool
-  if dat := obj.Data("CGMS_msg"); dat == nil {
-    scripts.Log("CannotGetMessageScript(%q): obj.Data(\"CGMS_msg\") is nil", obj.Ref())
-    return true
-  } else {
-    if no_get_msg, ok = dat.(string); !ok {
-      scripts.Log("CannotGetMessageScript(%q): obj.Data(\"CGMS_msg\") is of wrong type (%T)", obj.Ref(), dat)
-      return true
-    }
-  }
-  
-  subj.Deliver(msg.New(no_get_msg))
-  return false
-}
-
-func init() {
-  scripts.Scripts["CGMS"] = CannotGetMessageScript
 }
