@@ -192,12 +192,11 @@ func (pp *PlayerChar) Parse(cmd string) error {
   
   pp.Send(msg.Env{Type: "echo", Text: cmd})
   
-  if len(cmd) == 0 {
+  toks := strings.Fields(strings.ToLower(cmd))
+  if len(toks) == 0 {
     pp.QWrite("Sorry, what?")
     return nil
   }
-  
-  toks := strings.Fields(strings.ToLower(cmd))
   
   // process shortcuts
   if (cmd[0] == '"') || (cmd[0] == '\'') {
