@@ -21,6 +21,7 @@ import( "bufio"; "fmt"; "flag"; "net"; "os"; "path/filepath"; "strings";
 const mainWorldFile = "main.json"
 const descPath      = "descs"
 
+var sockName string = "ctrl"
 var worldDir string
 var actionQueueLength int = 256
 var listenPort string = ":10102"
@@ -74,6 +75,29 @@ func listenToStdin() {
   for scnr.Scan() {
     commandChannel <- scnr.Text()
   }
+}
+
+func listenOnSocket() {
+  lsnr, err := net.ListenUnix("unix", &net.UnixAddr{sockName, "unix"})
+  if err != nil {
+    log(dtalog.ERR, "listenOnSocket(): error opening listener: %s\n", err)
+    os.Exit(1)
+  }
+  
+  for run {
+    conn, err := lsnr.AcceptUnix()
+    if err != nil {
+      log(dtalog.ERR, "listenOnSocket(): error accepting connection: %s\n", err)
+    } else {
+      scnr := bufio.NewScanner(conn)
+      for scnr.Scan() {
+        commandChannel <- scnr.Text()
+      }
+    }
+    conn.Close()
+  }
+  
+  lsnr.Close()
 }
 
 func autoUnload() error {
@@ -216,7 +240,8 @@ func main() {
   }
   
   go listenForConnections()
-  go listenToStdin()
+  // go listenToStdin()
+  go listenOnSocket()
   
   for run {
     select {
