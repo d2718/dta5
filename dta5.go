@@ -129,13 +129,8 @@ func processCommand(cmd string) {
       log(dtalog.MSG, "processCommand(): you must specify an identifier to save.")
       return
     }
-    m := msg.Env{
-      Type: "sys",
-      Text: "You are being logged out so that the state of the game may be saved.",
-    }
-    pc.Wall(m)
     for _, pp := range pc.PlayerChars {
-      pp.Logout()
+      pp.Logout("You have been logged out so that the state of the game may be saved.")
     }
     save_path := filepath.Join(worldDir, "saves", rest + ".json")
     s, err := save.New(save_path)
@@ -168,13 +163,8 @@ func processCommand(cmd string) {
       log(dtalog.MSG, "processCommand(): you must specify and identifier to load.")
       return
     }
-    m := msg.Env{
-      Type: "sys",
-      Text: "You are being logged out so that the state of the game may be loaded.",
-    }
-    pc.Wall(m)
     for _, pp := range pc.PlayerChars {
-      pp.Logout()
+      pp.Logout("You are being logged out so that the state of the game may be loaded.")
     }
     load_path := filepath.Join(worldDir, "saves", rest + ".json")
     ref.Reset()
@@ -196,13 +186,8 @@ func processCommand(cmd string) {
     log(dtalog.DBG, "processCommand(): load complete")
     
   case "quit":
-    m := msg.Env{
-      Type:"sys",
-      Text: "The game is being shut down RIGHT NOW.",
-    }
-    pc.Wall(m)
     for _, pp := range pc.PlayerChars {
-      pp.Logout()
+      pp.Logout("The game has been shut down.")
     }
     run = false
   default:
@@ -258,6 +243,11 @@ func main() {
         }
       }
     }
+  }
+  err := os.Remove(sockName)
+  if err != nil {
+    log(dtalog.ERR, "main(): unable to remove control socket %q: %s\n",
+                    sockName, err)
   }
 }
 

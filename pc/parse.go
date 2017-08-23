@@ -211,7 +211,7 @@ func (pp *PlayerChar) Parse(cmd string) error {
     }
     
     if toks[0] == "quit" {
-      return pp.Logout()
+      return pp.Logout("You have quit the game.")
     }
     
   }
