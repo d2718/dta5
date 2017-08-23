@@ -261,7 +261,7 @@ func Login(newConn net.Conn) error {
   return nil
 }
 
-func (pp *PlayerChar) Logout() error {
+func (pp *PlayerChar) Logout(mesg string) error {
   state := PlayerState{
     PassHash:  pp.passHash,
     RefToken:  pp.Ref(),
@@ -305,7 +305,7 @@ func (pp *PlayerChar) Logout() error {
   m.Add(pp, "txt", "You leave.")
   loc.Deliver(m)
   loc.Contents.Remove(pp)
-  pp.Send(msg.Env{ Type: "logout", Text: "You have been logged out.", })
+  pp.Send(msg.Env{ Type: "logout", Text: mesg, })
   pp.conn.Close()
   delete(PlayerChars, pp.ref)
   ref.Deregister(pp)
