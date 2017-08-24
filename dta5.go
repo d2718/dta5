@@ -9,8 +9,8 @@
 //
 package main
 
-import( "bufio"; "fmt"; "flag"; "net"; "os"; "path/filepath"; "strings";
-        "time";
+import( "bufio"; "bytes"; "fmt"; "flag"; "net"; "os"; "path/filepath";
+        "strings"; "time";
         "github.com/d2718/dconfig";
         "dta5/log";
         "dta5/act"; "dta5/desc"; "dta5/door"; "dta5/load"; "dta5/mood";
@@ -23,9 +23,11 @@ const descPath      = "descs"
 
 var sockName string = "ctrl"
 var worldDir string
-var actionQueueLength int = 256
+var actionQueueLength  int = 256
+var commandQueueLength int = 16
 var listenPort string = ":10102"
 var unloadInterval = time.Duration(15) * time.Second
+var commandChannel chan string
 
 func log(lvl dtalog.LogLvl, fmtstr string, args ...interface{}) {
   dtalog.Log(lvl, fmt.Sprintf("dta5.go: " + fmtstr, args...))
@@ -36,11 +38,12 @@ func Configure(cfgPath string) {
   var stale_cfgint int = 300 
   
   dconfig.Reset()
-  dconfig.AddInt(&actionQueueLength, "queue_length", dconfig.UNSIGNED)
-  dconfig.AddInt(&port_cfgint,       "port",         dconfig.UNSIGNED)
-  dconfig.AddInt(&stale_cfgint,      "page_life",    dconfig.UNSIGNED)
-  dconfig.AddString(&pc.HelpDir,     "help_dir",     dconfig.STRIP)
-  dconfig.AddInt(&pc.HashCost,       "hash_cost",    dconfig.UNSIGNED)
+  dconfig.AddInt(&actionQueueLength, "queue_length",      dconfig.UNSIGNED)
+  dconfig.AddInt(&commandQueueLength, "cmd_queue_length", dconfig.UNSIGNED)
+  dconfig.AddInt(&port_cfgint,       "port",              dconfig.UNSIGNED)
+  dconfig.AddInt(&stale_cfgint,      "page_life",         dconfig.UNSIGNED)
+  dconfig.AddString(&pc.HelpDir,     "help_dir",          dconfig.STRIP)
+  dconfig.AddInt(&pc.HashCost,       "hash_cost",         dconfig.UNSIGNED)
   dconfig.Configure([]string{cfgPath}, true)
   
   listenPort = fmt.Sprintf(":%d", port_cfgint)
@@ -67,8 +70,6 @@ func listenForConnections() {
     }
   }
 }
-
-var commandChannel = make(chan string)
 
 func listenToStdin() {
   scnr := bufio.NewScanner(os.Stdin)
@@ -123,6 +124,17 @@ func processCommand(cmd string) {
   switch verb {
   case "wall":
     pc.Wall(msg.Env{Type: "sys", Text: rest})
+  
+  case "wallfile":
+    f, err := os.Open(rest)
+    if err != nil {
+      log(dtalog.MSG, "processCommand(): unable to open file %q: %s", rest, err)
+      return
+    }
+    defer f.Close()
+    buff := new(bytes.Buffer)
+    buff.ReadFrom(f)
+    pc.Wall(msg.Env{Type: "sys", Text: buff.String()})
     
   case "save":
     if rest == "" {
@@ -226,6 +238,7 @@ func main() {
   
   go listenForConnections()
   // go listenToStdin()
+  commandChannel = make(chan string, commandQueueLength)
   go listenOnSocket()
   
   for run {
