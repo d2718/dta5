@@ -76,7 +76,8 @@ func Login(newConn net.Conn) error {
   new_rcvr := json.NewDecoder(newConn)
   new_sndr := json.NewEncoder(newConn)
   
-  var mesg msg.Env = msg.Env{ Type: "version", Text: "experimental", }
+  var mesg msg.Env = msg.Env{ Type: "version",
+                              Text: fmt.Sprintf("%d", ClientVersion), }
   err := new_sndr.Encode(mesg)
   if err != nil {
     log(dtalog.ERR, "Login(): error sending version message: %s", err)
@@ -357,26 +358,6 @@ func (pp *PlayerChar) Deliver(m *msg.Message) {
     pp.Send(nvlp)
   }
 }
-
-//~ func (pp *PlayerChar) React(cmd string) {
-  //~ log(dtalog.DBG, "(*PlayerChar %q) React(): reacting: %q", pp.Short(0), cmd)
-  
-  //~ if cmd == "quit" {
-    //~ pp.Logout()
-    //~ return
-  //~ }
-  
-  //~ m := msg.New(fmt.Sprintf("%s does this: %s", pp.Normal(0), cmd))
-  //~ m.Add(pp, fmt.Sprintf("You do this: %s", cmd))
-  //~ a := act.Action{
-    //~ Time: time.Now(),
-    //~ Act: func() error {
-      //~ pp.where.Place.(*room.Room).Deliver(m)
-      //~ return nil
-    //~ },
-  //~ }
-  //~ act.Enqueue(&a)
-//~ }
 
 // AllButMe() returns a thing.ThingList containing the PlayerChar's current
 // room.Room's.Contents but without the PlayerChar.

@@ -148,7 +148,7 @@ func DoMove(pp *PlayerChar, verb string, dobj thing.Thing,
           pp.QWrite("Some unseen force prevents you. (Really, though, this is a game error.)")
           return
         }
-        ar_m = msg.New("%s arrives through %s %s.", sname, o_dwy.Normal(0), o_dwy.Loc().String())
+        ar_m = msg.New("txt", "%s arrives through %s %s.", sname, o_dwy.Normal(0), o_dwy.Loc().String())
       default:
         log(dtalog.ERR, "DoMove(): other *door.Doorway (%q) not contained in room.Room or in thing.Container in a room.Room.", o_dwy.Ref())
         pp.QWrite("Some unseen force prevents you. (Really, though, this is a game error.)")
