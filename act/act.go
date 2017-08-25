@@ -11,7 +11,7 @@ import( "container/heap"; "fmt"; "time";
 )
 
 func log(lvl dtalog.LogLvl, fmtstr string, args ...interface{}) {
-  dtalog.Log(lvl, fmt.Sprintf("act.go: " + fmtstr, args...))
+  dtalog.Log(lvl, fmt.Sprintf("act: " + fmtstr, args...))
 }
 const logTimeFmt = "15:04:05.000000"
 
@@ -107,7 +107,6 @@ func Add(delay float64, f func() error) {
   }
   Enqueue(&a)
 }
-    
 
 func Next() *Action {
   select {

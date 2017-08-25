@@ -20,17 +20,12 @@ func DoLook(pp *PlayerChar, verb string,
     if dobj != nil {
       pp.QWrite("You look at %s %s %s.", dobj.Full(0), prep, iobj.Normal(0))
       pp.QWrite(dobj.Desc())
-      switch t_dobj := dobj.(type) {
-      case thing.Openable:
+      if t_dobj, ok := dobj.(thing.Openable); ok {
         if t_dobj.IsOpen() {
-          if t_dobj.IsOpen() {
-            pp.QWrite("%s is open.", util.Cap(dobj.Short(name.DEF_ART)))
-          } else {
-            pp.QWrite("%s is closed.", util.Cap(dobj.Short(name.DEF_ART)))
-          }
+          pp.QWrite("%s is open.", util.Cap(dobj.Short(name.DEF_ART)))
+        } else {
+          pp.QWrite("%s is closed.", util.Cap(dobj.Short(name.DEF_ART)))
         }
-      default:
-        // do nothing else special
       }
     } else {
       t_iobj := iobj.(thing.Container)

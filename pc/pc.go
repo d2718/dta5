@@ -18,7 +18,7 @@ var HashCost int = 4
 var ClientVersion int = 170818
 
 func log(lvl dtalog.LogLvl, fmtstr string, args ...interface{}) {
-  dtalog.Log(lvl, fmt.Sprintf("pc.go: " + fmtstr, args...))
+  dtalog.Log(lvl, fmt.Sprintf("pc: " + fmtstr, args...))
 }
 
 type PlayerState struct {
@@ -329,11 +329,7 @@ func (pp *PlayerChar) listen() {
           pp.Short(0), err)
       return
     } else if cmd.Type == "cmd" {
-      a := act.Action{
-        Time: time.Now(),
-        Act: func() error { return pp.Parse(cmd.Text)},
-      }
-      act.Enqueue(&a)
+      act.Add(0.0, func() error { return pp.Parse(cmd.Text) })
     }
   }
 }

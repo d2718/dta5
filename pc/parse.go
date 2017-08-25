@@ -235,7 +235,7 @@ func (pp *PlayerChar) Parse(cmd string) error {
   if parse_func, ok := parseDispatch[verb]; ok {
     parse_func(pp, verb, toks, cmd)
   } else {
-    pp.QWrite("You don't appear to know how to %q.", t_verb)
+    pp.QWrite("You don't appear to know how to %q.", cmd)
   }
   
   return nil
