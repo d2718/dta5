@@ -97,7 +97,7 @@ func json2TVal(x interface{}) interface{} {
 }
 
 func log(lvl dtalog.LogLvl, fmtstr string, args ...interface{}) {
-  dtalog.Log(lvl, fmt.Sprintf("load.go: " + fmtstr, args...))
+  dtalog.Log(lvl, fmt.Sprintf("load: " + fmtstr, args...))
 }
 
 // All of the various loadXXX() functions that operate on the individual

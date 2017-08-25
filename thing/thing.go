@@ -25,7 +25,7 @@ import( "fmt";
 )
 
 func log(lvl dtalog.LogLvl, fmtstr string, args ...interface{}) {
-  dtalog.Log(lvl, fmt.Sprintf("thing.go: " + fmtstr, args...))
+  dtalog.Log(lvl, fmt.Sprintf("thing: " + fmtstr, args...))
 }
 
 // The ValueType is for classifying TVals.
