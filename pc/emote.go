@@ -103,6 +103,29 @@ var emoteSpPreps = map[string]string {
   "lean": "toward",
 }
 
+var emoteReflexSpecials = map[string]verbConj {
+  "blink":    verbConj{ "{subj} {verb} a few times.", "" },
+  "chuckle":  verbConj{ "{subj} {verb} quietly to {subj_rp}.", "" },
+  "gaze":     verbConj{ "{subj} {verb} into the middle distance.", "" },
+  // frown
+  "glance":   verbConj{ "{subj} {verb} about.", "" },
+  "grin":     verbConj{ "You try to stifle a grin.",
+                        "{subj} tries to stifle a grin.", },
+  "lean":     verbConj{ "You shift your weight.",
+                        "{subj} shifts {subj_pp} weight.", },
+  "nod":      verbConj{ "You nod to yourself.",
+                        "{subj} nods to {subj_pp}.", },
+  "raise":    verbConj{ "{subj} {verb} a single eyebrow.", "" },
+  "shake":    verbConj{ "{subj} {verb} emphatically.", "" },
+  // shrug
+  "sigh":     verbConj{ "{subj} {verb} deeply.", "" },
+  // snap
+  "snicker":  verbConj{ "{subj} {verb} to {subj_rp}.", "" },
+  "squint":   verbConj{ "You narrow your eyes.",
+                        "{subj} narrows {subj_pp} eyes.", },
+  "stare":    verbConj{ "{subj} {verb} off into space.", "" },
+}
+
 // type DoFunc func(*PlayerChar, string, thing.Thing, string, thing.Thing, string)
 
 func DoEmote(pp *PlayerChar, verb string, dobj thing.Thing,
@@ -134,15 +157,24 @@ func DoEmote(pp *PlayerChar, verb string, dobj thing.Thing,
     } else if dobj == pp {
       f1p["subj_rp"] = "yourself"
       f3p["subj_rp"] = pp.ReflexPronoun()
-      var sp_prep string
+      var sp_prep, t1p, t3p string
       var ok bool
+      var vc verbConj
       if sp_prep, ok = emoteSpPreps[verb]; !ok {
         sp_prep = emoteDefaultSpPrep
       }
       f1p["sp_prep"] = sp_prep
       f3p["sp_prep"] = sp_prep
-      m = msg.New("txt", util.Cap(gstring.Sprintm(emoteReflexTemplate, f3p)))
-      m.Add(pp, "txt", util.Cap(gstring.Sprintm(emoteReflexTemplate, f1p)))
+      if vc, ok = emoteReflexSpecials[verb]; ok {
+        t1p, t3p = vc.p1, vc.p3
+        if t3p == "" {
+          t3p = t1p
+        }
+      } else {
+        t1p, t3p = emoteReflexTemplate, emoteReflexTemplate
+      }
+      m = msg.New("txt", util.Cap(gstring.Sprintm(t3p, f3p)))
+      m.Add(pp, "txt", util.Cap(gstring.Sprintm(t1p, f1p)))
       
     } else {
       f2p := map[string]interface{} {"subj": pp.Normal(0),
