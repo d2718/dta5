@@ -2,7 +2,7 @@
 //
 // dta5 PlayerChar "directional emote" verbs
 //
-// updated 2017-08-09
+// updated 2017-08-25
 //
 package pc
 
