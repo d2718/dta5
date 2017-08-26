@@ -196,12 +196,31 @@ func processCommand(cmd string) {
     }
     
     log(dtalog.DBG, "processCommand(): load complete")
+  
+  case "logout":
+    lo_slice := strings.SplitN(rest, " ", 2)
+    if len(lo_slice) < 2 {
+      fmt.Printf("Not enough arguments to the \"logout\" command.\n")
+    } else {
+      r_idx, reason := lo_slice[0], lo_slice[1]
+      r := ref.Deref(r_idx)
+      if pp, ok := r.(*pc.PlayerChar); ok {
+        pp.Logout(reason)
+      } else {
+        fmt.Printf("%q is not the reference ID of a logged-in player.\n", r_idx)
+      }
+    }
     
   case "quit":
     for _, pp := range pc.PlayerChars {
       pp.Logout("The game has been shut down.")
     }
     run = false
+    
+  case "who":
+    for _, pp := range pc.PlayerChars {
+      fmt.Printf("%q: %s\n", pp.Ref(), pp.Full(0))
+    }
   default:
     log(dtalog.MSG, "processCommand(): unrecognized command: %q", verb)
   }
