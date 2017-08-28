@@ -61,7 +61,7 @@ func DoWear(pp *PlayerChar, verb string, dobj thing.Thing,
       var templ string
       slotName := bod.WornSlotName(slot)
       if slotName == "" {
-        templ = "{subj} {verb} {dobj}."
+        templ = "{subj} {verb} on {dobj}."
       } else {
         templ = fmt.Sprintf("{subj} {verb} {dobj} %s.", slotName)
       }
