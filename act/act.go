@@ -48,13 +48,13 @@ type Action struct {
 type ActionQueue []*Action
 
 // ActionQueue implements sort.Interface
-
+//
 func (aq ActionQueue) Len() int { return len(aq) }
 func (aq ActionQueue) Swap(i, j int) { aq[i], aq[j] = aq[j], aq[i] }
 func (aq ActionQueue) Less(i, j int) bool { return aq[j].After(aq[i].Time) }
 
 // ActionQueue also implements heap.Interface
-
+//
 func (aqp *ActionQueue) Push(x interface{}) {
   var ap *Action
   
@@ -95,7 +95,7 @@ var popChan  chan *Action
 //
 var IdleInterval int = 100 //milliseconds
 
-// Starts or the management of the single queue of *Actions. Only call this
+// Starts the management of the single queue of *Actions. Only call this
 // once, because it starts the idle() goroutine that will run forever.
 //
 func Initialize(chanSize int) {
