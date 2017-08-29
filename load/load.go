@@ -352,6 +352,13 @@ func loadData(data []interface{}) error {
   return nil
 }
 
+// These three maps specify which type of loading should be done under
+// different circumstances. Obviously, when the game is first started, all of
+// the world data should be loaded. Only "non-permanent" objects and states
+// are saved when the game is saved, though, so when the game is loaded,
+// "permanent" objects should be read from the "world" file, and
+// "non-permanent" objects and state from the save file.
+
 var initialLoadMap = map[string]LoadFunc {
   "room":   loadRoom,
   "item":   loadItem,
@@ -383,12 +390,26 @@ var mutableLoadMap = map[string]LoadFunc {
   "data":   loadData,
 }
 
+// These values are used to specify what type of loading situation is
+// taking place when calling the LoadFeature() and LoadFile() functions
+// below:
+//
+// INIT: Initial loading of the game world upon game launch.
+// PERM: Reading of game world files for loading of "permanent" game world
+//       features upon the loading of a saved game state.
+// MUT : Reading of saved game file(s) upon loading of a saved game state.
+//
 type LoadType byte
 const(  INIT  LoadType = 0
         PERM  LoadType = 1
         MUT   LoadType = 2
 )
 
+// LoadFeature() is called for every item (that is, JSON list specifying an
+// element of the game world) in a loaded file. Given the conditions (that is,
+// the current mode), the item is either ignored, or the appropriate loadXxx()
+// function is called.
+//
 func LoadFeature(x []interface{}, mode LoadType) error {
   var lf LoadFunc
   var ok bool
@@ -409,6 +430,10 @@ func LoadFeature(x []interface{}, mode LoadType) error {
   }
 }
 
+// LoadFile() reads sequentially the JSON lists in a given file specifying
+// world data and invokes the appropriate functions (by calling LoadFeature())
+// or reads the appropriate linked files (by calling itself).
+//
 func LoadFile(path string, mode LoadType) error {
   f, err := os.Open(path)
   if err != nil {
