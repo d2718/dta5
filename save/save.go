@@ -1,13 +1,18 @@
 // save.go
 //
-// dta5 state-saving
+// An almost-unnecessary abstraction for saving the state of the game.
 //
-// updated 2017-08-01
+// updated 2017-08-30
+//
+// A Saver is really no more than a pointer to the save game os.File and
+// a json.Encoder that writes to that file. Any saveable object (which should
+// implement the save.Interface) should know how to generate the appropriate
+// JSON object to represent itself, and its Save() method should ask the
+// supplied Saver to encode that object.
 //
 package save
 
-import( "encoding/json"; "os";
-)
+import( "encoding/json"; "os"; )
 
 type Saver struct {
   *os.File
