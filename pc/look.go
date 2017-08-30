@@ -12,6 +12,13 @@ import( "fmt"; "strings";
         "dta5/util";
 )
 
+// type DoFunc func(*PlayerChar,
+//                  string,           verb
+//                  thing.Thing,      direct object
+//                  string,           preposition
+//                  thing.Thing,      indirect object
+//                  string)           complete command text
+
 func DoLook(pp *PlayerChar, verb string,
             dobj thing.Thing, prep string, iobj thing.Thing,
             text string) {

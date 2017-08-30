@@ -21,6 +21,15 @@ where <option> is one of the following:
 
 %s`
 
+// type DoFunc func(*PlayerChar,
+//                  string,           verb
+//                  thing.Thing,      direct object
+//                  string,           preposition
+//                  thing.Thing,      indirect object
+//                  string)           complete command text
+//
+// ^^^^ not that this matters ^^^^
+
 func DoHelp(pp *PlayerChar, verb string, dobj thing.Thing,
             prep string, iobj thing.Thing, text string) {
   

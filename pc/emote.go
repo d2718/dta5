@@ -115,7 +115,8 @@ var emoteReflexSpecials = map[string]verbConj {
                         "{subj} shifts {subj_pp} weight.", },
   "nod":      verbConj{ "You nod to yourself.",
                         "{subj} nods to {subj_pp}.", },
-  "raise":    verbConj{ "{subj} {verb} a single eyebrow.", "" },
+  "raise":    verbConj{ "{subj} raise a single eyebrow.",
+                        "{subj} raises a single eyebrow.", },
   "shake":    verbConj{ "{subj} {verb} emphatically.", "" },
   // shrug
   "sigh":     verbConj{ "{subj} {verb} deeply.", "" },
@@ -126,7 +127,12 @@ var emoteReflexSpecials = map[string]verbConj {
   "stare":    verbConj{ "{subj} {verb} off into space.", "" },
 }
 
-// type DoFunc func(*PlayerChar, string, thing.Thing, string, thing.Thing, string)
+// type DoFunc func(*PlayerChar,
+//                  string,           verb
+//                  thing.Thing,      direct object
+//                  string,           preposition
+//                  thing.Thing,      indirect object
+//                  string)           complete command text
 
 func DoEmote(pp *PlayerChar, verb string, dobj thing.Thing,
              prep string, iobj thing.Thing, text string) {

@@ -14,6 +14,15 @@ import( "strings";
 const sayTemplate   = `{subj} {verb}, "{text}{punct}"`
 const sayToTemplate = `{subj} {verb} {targ}, "{text}{punct}"`
 
+// type DoFunc func(*PlayerChar,
+//                  string,           verb
+//                  thing.Thing,      direct object
+//                  string,           preposition
+//                  thing.Thing,      indirect object
+//                  string)           complete command text
+//
+// ^^^ none of this matters ^^^
+
 func DoSay(pp *PlayerChar, verb string, dobj thing.Thing,
            prep string, iobj thing.Thing, text string) {
   

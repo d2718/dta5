@@ -47,8 +47,17 @@ var ordinals map[string]int = map[string]int {
   "other": 1, // just an alias for "second"
 }
 
-type ParseFunc func(*PlayerChar, string, []string, string)
-type DoFunc func(*PlayerChar, string, thing.Thing, string, thing.Thing, string)
+type ParseFunc func(*PlayerChar,  // the character doing the action
+                    string,       // the verb (first token)
+                    []string,     // the rest of the tokens
+                    string)       // the entire text of the command
+
+type DoFunc func(*PlayerChar, // the character doing the action
+                 string,      // verb
+                 thing.Thing, // direct object
+                 string,      // preposition
+                 thing.Thing, // indirect object
+                 string)      // complete command text
 
 var parseDispatch map[string]ParseFunc = map[string]ParseFunc {
   "close":      ParseLikeLook,
