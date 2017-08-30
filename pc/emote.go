@@ -115,7 +115,8 @@ var emoteReflexSpecials = map[string]verbConj {
                         "{subj} shifts {subj_pp} weight.", },
   "nod":      verbConj{ "You nod to yourself.",
                         "{subj} nods to {subj_pp}.", },
-  "raise":    verbConj{ "{subj} {verb} a single eyebrow.", "" },
+  "raise":    verbConj{ "{subj} raise a single eyebrow.",
+                        "{subj} raises a single eyebrow.", },
   "shake":    verbConj{ "{subj} {verb} emphatically.", "" },
   // shrug
   "sigh":     verbConj{ "{subj} {verb} deeply.", "" },

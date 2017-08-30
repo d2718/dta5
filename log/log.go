@@ -20,12 +20,13 @@
 // for more, but there's plenty of debate about "log levels", and probably
 // four is two or three too many):
 //
-//  * ERR: Things that are absolutely errors, either with the software
-//         or with the world data.
-//  * WRN: Things that are maybe fishy and should be corrected, but
-//         shouldn't necessarily be fatal.
-//  * MSG: Information that should be logged, but aren't necessarily problems,
-//         like the game world being done loading, or failed login attempts.
+//  * ERR: Things that are absolutely errors, either with the softwarevor with
+//         the world data.
+//  * WRN: Things that are maybe fishy and should be corrected, but shouldn't
+//         necessarily be fatal.
+//  * MSG: Information that should be logged, but isn't necessarily indicative
+//         of a problem, like the game world being done loading, lost
+//         connections, or failed login attempts.
 //  * DBG: Messages that are useful during development, but should definitely
 //         be turned off in production.
 //
