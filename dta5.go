@@ -3,9 +3,33 @@
 // The FIFTH try at a text adventure. The... thee-and-a-halfth? Try at
 // an online multi-player environment.
 //
-// This file contains the main function.
+// updated 2017-08-28
 //
-// updated 2017-08-08
+// At any given time, this is not guaranteed to run on any platform other
+// than the one I'm using as a game server.
+//
+// Invocation:
+//
+//  ./dta5 path/to/world/dir
+//
+// or, better yet,
+//
+//  nohup ./dta5 path/to/world/dir &
+//
+// Where path/to/world/dir is a directory that contains the base "main.json"
+// file for the game world you intend to run. (See the dta5/load package for
+// specifics on file format.) Right now, if you have just cloned the git
+// repository and built dta5.go (with go build), you can run the development
+// test world with
+//
+//  nohup ./dta5 _devw/dw2 &
+//
+// Administrative control of the game world is through a socket called "ctrl"
+// that will be created in the game world. The best way to talk to the server
+// from the command line is by using netcat. For example, to shut the game
+// down:
+//
+//  echo "quit" | nc -U ctrl
 //
 package main
 
@@ -18,32 +42,56 @@ import( "bufio"; "bytes"; "fmt"; "flag"; "net"; "os"; "path/filepath";
         "dta5/scripts/more"; "dta5/save";
 )
 
-const mainWorldFile = "main.json"
-const descPath      = "descs"
+const DEBUG = false
 
-var sockName string = "ctrl"
+// Filename of the initial file the game world tries to load in the specified
+// world directory.
+const mainWorldFile string = "main.json"
+// Name of the directory in the world directory where the dta5/desc
+// description files live.
+const descPath string      = "descs"
+// Name of the control socket through which commands are issued to the server.
+const sockName string      = "ctrl"
+
+// Directory containing the world information to be loaded; specified on
+// the command line.
 var worldDir string
+// Size of the buffered channels used for sending to/receiving from the
+// dta5/act queue of actions. This is configurable and may require tuning
+// for large game worlds or high-traffic servers.
 var actionQueueLength  int = 256
+// Size of the buffered channel used to send commands to the server. This
+// really shouldn't need to be very large; you might even be able to get
+// away with an unbuffered channel.
 var commandQueueLength int = 16
+// The port on which the game listens for connections from clients. This
+// option is configurable.
 var listenPort string = ":10102"
+// The time after which unused dta5/desc Pages (q.v. the package) are
+// considered "stale" and unloaded. Also the time between checks for staleness.
 var unloadInterval = time.Duration(15) * time.Second
+// Channel which conveys commands from the socket to the main() function.
 var commandChannel chan string
 
 func log(lvl dtalog.LogLvl, fmtstr string, args ...interface{}) {
   dtalog.Log(lvl, fmt.Sprintf("dta5.go: " + fmtstr, args...))
 }
 
+// Read configuration files and set appropriate variable values. See the
+// configuration file included in the development test world
+// ("_devw/dw2/conf") for explanations of the options.
+//
 func Configure(cfgPath string) {
   var port_cfgint  int = 10102
   var stale_cfgint int = 300 
   
   dconfig.Reset()
-  dconfig.AddInt(&actionQueueLength, "queue_length",      dconfig.UNSIGNED)
-  dconfig.AddInt(&commandQueueLength, "cmd_queue_length", dconfig.UNSIGNED)
-  dconfig.AddInt(&port_cfgint,       "port",              dconfig.UNSIGNED)
-  dconfig.AddInt(&stale_cfgint,      "page_life",         dconfig.UNSIGNED)
-  dconfig.AddString(&pc.HelpDir,     "help_dir",          dconfig.STRIP)
-  dconfig.AddInt(&pc.HashCost,       "hash_cost",         dconfig.UNSIGNED)
+  dconfig.AddInt(&actionQueueLength,  "queue_length",      dconfig.UNSIGNED)
+  dconfig.AddInt(&commandQueueLength, "cmd_queue_length",  dconfig.UNSIGNED)
+  dconfig.AddInt(&port_cfgint,        "port",              dconfig.UNSIGNED)
+  dconfig.AddInt(&stale_cfgint,       "page_life",         dconfig.UNSIGNED)
+  dconfig.AddString(&pc.HelpDir,      "help_dir",          dconfig.STRIP)
+  dconfig.AddInt(&pc.HashCost,        "hash_cost",         dconfig.UNSIGNED)
   dconfig.Configure([]string{cfgPath}, true)
   
   listenPort = fmt.Sprintf(":%d", port_cfgint)
@@ -51,6 +99,8 @@ func Configure(cfgPath string) {
   desc.StalePageLife = time.Duration(stale_cfgint) * time.Second
 }
 
+// Meant to run as a goroutine. Listens for connecting clients and attempts
+// to log them in.
 func listenForConnections() {
   lsnr, err := net.Listen("tcp", listenPort)
   if err != nil {
@@ -71,13 +121,20 @@ func listenForConnections() {
   }
 }
 
-func listenToStdin() {
-  scnr := bufio.NewScanner(os.Stdin)
-  for scnr.Scan() {
-    commandChannel <- scnr.Text()
-  }
-}
+// Reads server commands from stdin and shoves them in the channel to be
+// processed by main(). As of 2017-08-29 this is no longer used, because
+// communication with the server is done through a socket.
+//
+//~ func listenToStdin() {
+  //~ scnr := bufio.NewScanner(os.Stdin)
+  //~ for scnr.Scan() {
+    //~ commandChannel <- scnr.Text()
+  //~ }
+//~ }
 
+// Listens to the command socket and shoves commands into the channel for
+// processing by main().
+//
 func listenOnSocket() {
   lsnr, err := net.ListenUnix("unix", &net.UnixAddr{sockName, "unix"})
   if err != nil {
@@ -101,6 +158,9 @@ func listenOnSocket() {
   lsnr.Close()
 }
 
+// Unloads stale dta5/desc pages, then sets itself to fire again after the
+// configured interval.
+//
 func autoUnload() error {
   desc.UnloadStale()
   again := act.Action{
@@ -110,7 +170,10 @@ func autoUnload() error {
   act.Enqueue(&again)
   return nil
 }
-    
+
+// processCommand() takes appropriate action when commands come in through
+// the command socket.
+//
 func processCommand(cmd string) {
   log(dtalog.DBG, "processCommand(): rec'd: %q", cmd)
   cmd_slice := strings.SplitN(cmd, " ", 2)
@@ -236,7 +299,9 @@ func main() {
   dtalog.Start(dtalog.ERR, os.Stdout)
   dtalog.Start(dtalog.WRN, os.Stdout)
   dtalog.Start(dtalog.MSG, os.Stdout)
-  //dtalog.Start(dtalog.DBG, os.Stdout)
+  if DEBUG {
+    dtalog.Start(dtalog.DBG, os.Stdout)
+  }
   
   Configure(filepath.Join(worldDir, "conf"))
   pc.PlayerDir = filepath.Join(worldDir, "pc_dir")

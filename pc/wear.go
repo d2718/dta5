@@ -11,7 +11,12 @@ import( "fmt";
         "dta5/msg"; "dta5/name"; "dta5/room"; "dta5/thing"; "dta5/util";
 )
 
-// type DoFunc func(*PlayerChar, string, thing.Thing, string, thing.Thing, string)
+// type DoFunc func(*PlayerChar,
+//                  string,           verb
+//                  thing.Thing,      direct object
+//                  string,           preposition
+//                  thing.Thing,      indirect object
+//                  string)           complete command text
 
 func DoWear(pp *PlayerChar, verb string, dobj thing.Thing,
             prep string, iobj thing.Thing, text string) {
