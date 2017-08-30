@@ -2,7 +2,39 @@
 //
 // dta5 managing pages of disk-borne descriptions
 //
-// updated 2017-07-29
+// updated 2017-08-30
+//
+// DTA5 deals with a great deal of text; it's the only information that
+// players see, and it's used to build the entirety of a fictional world
+// in their imaginations. Vast swathes of the game world and the items
+// contained therein require paragraphs upon paragraphs of descriptive text.
+// Not all of this text has to sit in memory all the time; any given game
+// world will undoubtedly be sparsely populated (MUDs just aren't cool
+// anymore), so parts that have sat dormant can have their descriptions
+// "unloaded" and not reloaded until someone needs to "look" at them again.
+//
+// The mechanism is thus: Textual descriptions reside in files in a specific
+// subdirectory of the game world directory (by default "descs/"). Each file
+// contains a "page" of descriptions (yes, this is by analogy to a "page" of
+// virtual memory, because the action here is vaguely analogous to swapping).
+// Upon initialization, each file gets walked, and each ref.Interface that
+// is described has its page pointer set. Thereafter, whenever a thing's
+// (by "thing" we mean something implementing desc.Interface) description is
+// requested, the package loads the page from disk if necessary, and then
+// returns the description.
+//
+// At each access of a descriptive page in memory, its last access time is
+// set. Periodically a sweep is made of all loaded pages, and if a given
+// page's last access time is old enough, that page is unloaded from memory.
+//
+// The format of a description page file is a series of two-element JSON
+// lists. The first element is the ref string of the described thingy,
+// the second is the description text. For example
+//
+//  ["r0-t1", "The mailbox is covered in rust-patched, chipped paint."]
+//
+// Remember: JSON doesn't support multi-line strings, so you will need to use
+// the appropriate escape sequence for line breaks.
 //
 package desc
 
@@ -19,18 +51,43 @@ type Interface interface {
   Desc() string
 }
 
+// If a page has not had one of its descriptions read after StalePageLife,
+// it is officially "stale" and will be unloaded on the next unload check.
+//
 var StalePageLife time.Duration = time.Duration(time.Minute * time.Duration(5))
 
+// The Page keeps track of how long it has been since its last access, and
+// a map of ref strings to their description strings.
+//
 type Page struct{
   Path string
   Stale time.Time
   Stuff map[string]string
 }
-
+ 
+// The master Page repository.
+//
 var Pages map[string]*Page = make(map[string]*Page)
+
+// Paths contains all of the paths to files containing pages of descriptions.
+// Each desc.Interface locates its descriptive text by storing a pointer to
+// the element of this slice that contains its page's path.
+//
 var Paths []string
+
+// A description file may hold the description of an object that is not
+// loaded into memory when the game starts (for example, items in the
+// inventory of a player character). When the Initialize() function initially
+// walks the description files to correctly set the pointers to the pages
+// for each item, the descriptions of not-yet-loaded items are put "in Limbo",
+// and when they finally are loaded, they are Unlimbo()'d.
+//
 var Limbo map[string]*string
 
+// Initialize() iterates through the files in the supplied directory, reading
+// each one in turn and setting each desc.Interface-implementing item's
+// description pointer to the appropriate page (or putting it in Limbo).
+//
 func Initialize(basePath string) error {
   log(dtalog.DBG, "Initialize(%q) called", basePath)
   dir, err := os.Open(basePath)
@@ -96,6 +153,8 @@ func Initialize(basePath string) error {
   return nil
 }
 
+// Sets the description page pointer for a Limbo'd object when it is loaded.
+//
 func UnLimbo(x Interface) {
   ref_str := x.(ref.Interface).Ref()
   if sptr, isIn := Limbo[ref_str]; isIn {
@@ -104,6 +163,8 @@ func UnLimbo(x Interface) {
   }
 }
 
+// Load the page whose descriptions are in the given file.
+//
 func LoadPage(pth string) error {
   log(dtalog.DBG, "LoadPage(%q) called", pth)
   f, err := os.Open(pth)
@@ -134,6 +195,9 @@ func LoadPage(pth string) error {
   return nil
 }
 
+// Walks through the loaded Pages and deletes the ones that haven't been
+// consulted since StalePageLife ago.
+//
 func UnloadStale() {
   log(dtalog.DBG, "UnloadStale() called")
   stale_keys := make([]string, 0, len(Pages))
@@ -152,6 +216,9 @@ func UnloadStale() {
   }
 }
 
+// Get the description for the provided Page/thing combo, loading the Page
+// from disk if necessary.
+//
 func GetDesc(pagePath, ref string) string {
   log(dtalog.DBG, "GetDesc(%q, %q) called", pagePath, ref)
   var pgp *Page
