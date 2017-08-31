@@ -9,10 +9,15 @@ package thing
 import( "dta5/ref"; "dta5/save";
 )
 
+// Something Wearable returns the string representing the slot upon which
+// it can be worn.
+//
 type Wearable interface {
   Slot() string
 }
 
+// A piece of Clothing is the most basic Thing that can be worn.
+//
 type Clothing struct {
   Item
   slot string
@@ -22,6 +27,8 @@ func (c Clothing) Slot() string {
   return c.slot
 }
 
+// Creates, ref.Register()s, and returns a new piece of Clothing.
+//
 func NewClothing(nref, artAdjNoun, prep string, plural bool,
                  mass, bulk interface{}, wornSlot string) *Clothing {
   nip := NewItem(nref, artAdjNoun, prep, plural, mass, bulk)
@@ -33,6 +40,9 @@ func NewClothing(nref, artAdjNoun, prep string, plural bool,
   return &nc
 }
 
+// MakeClothing() takes an Item and makes it into a piece of Clothing that
+// is worn in the supplied slot.
+//
 func MakeClothing(ip *Item, wornSlot string) *Clothing {
   nc := Clothing{
     Item: *ip,
@@ -49,6 +59,10 @@ func (c Clothing) Save(s save.Saver) {
   s.Encode(data)
 }
 
+// The WornContainer implements both the Container and the Wearable
+// interfaces. It represents a piece of clothing that can store stuff in
+// it, like a backpack or a jacket with pockets.
+//
 type WornContainer struct {
   Item
   slot       string
@@ -57,6 +71,8 @@ type WornContainer struct {
   contents   *ThingList
 }
 
+// Creates, ref.Register()s, and returns a new WornContainer.
+//
 func NewWornContainer(nref, artAdjNoun, prep string, plural bool,
                       mass, bulk interface{}, wornSlot string,
                       toggleable, isOpen bool, massHeld,
@@ -89,6 +105,9 @@ func (wp *WornContainer) Side(s byte) *ThingList {
   }
 }
 
+// MakeWornContainer() turns a regular Item into a WornContainer with the
+// extra supplied features.
+//
 func MakeWornContainer(ip *Item, wornSlot string, toggleable, isOpen bool,
                         massHeld, bulkHeld interface{}) *WornContainer {
   nwc := WornContainer{
