@@ -1,8 +1,11 @@
 // container.go
 //
-// dta5 container interface and basic container implementation
+// dta5 Container interface and basic container implementation
 //
-// updated 2017-08-11
+// updated 2017-08-30
+//
+// A Container is something that can store other Things (generally in
+// some combination of in, on, behind, and under it).
 //
 package thing
 
@@ -10,6 +13,8 @@ import(
         "dta5/name"; "dta5/ref"; "dta5/save";
 )
 
+// Things that can be opened and closed should implement this interface.
+//
 type Openable interface {
   IsToggleable() bool
   SetToggleable(bool)
@@ -17,12 +22,20 @@ type Openable interface {
   SetOpen(bool)
 }
 
+// Any Thing that can store other Things should implement this interface.
+// For suggested values of the argument to Side(), the constants IN, ON,
+// BEHIND, and UNDER are defined in the file thing.go.
+//
 type Container interface {
   name.Name
   Side(byte) *ThingList
   Openable
 }
 
+// The reference implementation of thing.Container, it has a map of
+// *ThingLists with keys IN, ON, BEHIND, and UNDER (any of which might map
+// to nil if it can't store objects there).
+//
 type ItemContainer struct {
   Item
   WillToggle bool
@@ -30,6 +43,9 @@ type ItemContainer struct {
   Sides map[byte]*ThingList
 }
 
+// Creates, ref.Register()s, and returns a new *ItemContainer. If you actually
+// want to store stuff in it, you need to use the AddSide() method.
+//
 func NewItemContainer(nref, artAdjNoun, prep string, plural bool,
                       descFile *string, mass, bulk interface{},
                       toggleable, open bool) *ItemContainer {
@@ -45,11 +61,24 @@ func NewItemContainer(nref, artAdjNoun, prep string, plural bool,
   return &nic
 }
 
+// Makes an ItemContainer actually able to store stuff. For example,
+//
+//  c := thing.NewItemContainer("r0-t0", "a/an massive marble altar", "",
+//                              false, nil, thing.VT_UNLTD, thing.VT_UNLTD,
+//                              false, false)
+//  c.AddSide(thing.BEHIND, thing.VT_UNLTD, 2000)
+//  c.AddSide(thing.ON, 10000, 2000)
+//
+// will create an altar that people can put stuff on and behind.
+//
 func (ic *ItemContainer) AddSide(s byte, mass, bulk interface{}) {
   ntl := NewThingList(mass, bulk, ic, s)
   ic.Sides[s] = ntl
 }
 
+// Return the *ThingList that represents the inventory on the given side
+// of the ItemContainer.
+//
 func (ic *ItemContainer) Side(s byte) *ThingList {
   tl, ok := ic.Sides[s]
   if ok {
